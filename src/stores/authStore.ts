@@ -19,7 +19,9 @@ interface AuthState {
   setLoading: (v: boolean) => void
 }
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+// 浏览器端走同源代理（通过 next.config.js rewrite 转发到后端）
+const isBrowser = typeof window !== 'undefined'
+const API = isBrowser ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001')
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
