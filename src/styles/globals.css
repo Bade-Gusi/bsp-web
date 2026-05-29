@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface text-white antialiased;
+    font-family: 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-700/50 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-surface-600/50; }
+
+  input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px #1C2123 inset !important; -webkit-text-fill-color: #F2F5F3 !important; }
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border rounded-md p-5 shadow-card;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-300;
+  }
+  .card-hover:hover {
+    @apply border-primary/40 shadow-glow scale-[1.02];
+  }
+
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-md;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary { @apply badge bg-primary/20 text-primary border border-primary/30; }
+  .badge-success { @apply badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30; }
+  .badge-warning { @apply badge bg-amber-500/20 text-amber-400 border border-amber-500/30; }
+  .badge-danger { @apply badge bg-red-500/20 text-red-400 border border-red-500/30; }
+
+  .stat-value { @apply text-3xl font-bold; }
+  .stat-label { @apply text-xs text-surface-300; }
+}
+
+@layer utilities {
+  .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent; }
+  .text-gradient-purple { @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-purple; }
+}
