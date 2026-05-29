@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node -e \"try{require('fs').rmSync('src/app/profile/[id]',{recursive:true,force:true})}catch(e){}\" || true",
     "build": "next build",
-    "start": "next start",
-    "export": "next build && cp -r out/* ../"
+    "export": "npm run build"
   },
   "dependencies": {
     "next": "^14.2.0",
