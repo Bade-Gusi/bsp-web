@@ -15,48 +15,57 @@ const scaleIn = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, sca
 
 export default function DashboardPage() {
   const { user, token } = useAuthStore()
-  const [stats, setStats] = useState({ todayMatches: 12, wins: 50, losses: 25, rating: 1850 })
-  const [matches, setMatches] = useState<any[]>([])
+  const [stats, setStats] = useState<{ todayMatches: number; wins: number; losses: number; rating: number } | null>(null)
+  const [matches, setMatches] = useState<any[] | null>(null)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     async function load() {
       try {
         if (token && user) {
-          const s = await api.getUserStats(user.id)
-          setStats({ todayMatches: s.totalGames || 12, wins: s.winCount || 0, losses: s.loseCount || 0, rating: s.mmr || 1850 })
-          const m = await api.getMatches(1)
-          setMatches(Array.isArray(m) ? m.slice(0, 5) : [])
+          const [s, m] = await Promise.all([
+            api.getUserStats(user.id).catch(() => null),
+            api.getMatches(1).catch(() => null),
+          ])
+          if (s) setStats({
+            todayMatches: s.todayGames ?? s.totalGames ?? 0,
+            wins: s.winCount ?? 0,
+            losses: s.loseCount ?? 0,
+            rating: s.mmr ?? 0,
+          })
+          if (Array.isArray(m)) setMatches(m.slice(0, 5))
         }
       } catch {}
-      setMatches(prev => prev.length ? prev : [
-        { mapName: 'de_dust2', isWin: true, createdAt: new Date().toISOString() },
-        { mapName: 'de_mirage', isWin: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
-      ])
       setLoaded(true)
     }
     load()
   }, [token, user])
 
-  const wr = stats.wins + stats.losses > 0 ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100) : 67
   if (!loaded) return null
+
+  const displayStats = stats
+    ? [
+        { label: '胜场', value: String(stats.wins), color: 'text-primary' },
+        { label: '负场', value: String(stats.losses), color: 'text-red-400' },
+        { label: 'Rating', value: stats.rating.toLocaleString(), color: 'text-amber-400' },
+        { label: '总场次', value: String(stats.wins + stats.losses), color: 'text-surface-300' },
+      ]
+    : [
+        { label: '胜场', value: '--', color: 'text-primary' },
+        { label: '负场', value: '--', color: 'text-red-400' },
+        { label: 'Rating', value: '--', color: 'text-amber-400' },
+        { label: '总场次', value: '--', color: 'text-surface-300' },
+      ]
 
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger}>
       <div className="grid grid-cols-4 gap-4 mb-6">
-        {[
-          { label: '今日场次', value: stats.todayMatches.toString(), color: 'text-primary' },
-          { label: '胜率', value: `${wr}%`, color: 'text-primary' },
-          { label: 'Rating', value: stats.rating.toLocaleString(), color: 'text-amber-400' },
-          { label: '游戏中心', value: '进入', color: 'text-primary', link: '/match' },
-        ].map((s, i) => (
+        {displayStats.map((s, i) => (
           <motion.div key={i} variants={scaleIn}>
-            <Link href={s.link || '#'}>
-              <Card variant="hover" className="h-24 flex flex-col justify-center">
-                <p className="text-xs text-surface-300 mb-1">{s.label}</p>
-                <p className={'text-3xl font-bold ' + s.color}>{s.value}</p>
-              </Card>
-            </Link>
+            <Card variant="default" className="h-24 flex flex-col justify-center">
+              <p className="text-xs text-surface-400 mb-1">{s.label}</p>
+              <p className={'text-3xl font-bold ' + s.color}>{s.value}</p>
+            </Card>
           </motion.div>
         ))}
       </div>
@@ -88,15 +97,25 @@ export default function DashboardPage() {
           <motion.div variants={fadeUp}>
             <Card variant="default">
               <h3 className="text-base font-bold text-white mb-4">最近战绩</h3>
-              <div className="space-y-1">
-                {matches.map((m, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-hover transition-colors cursor-pointer">
-                    <span className={'w-2 h-2 rounded-full ' + (m.isWin ? 'bg-primary' : 'bg-red-500')} />
-                    <span className="flex-1 text-sm text-white">{m.mapName || 'de_dust2'}</span>
-                    <span className={'text-sm font-bold ' + (m.isWin ? 'text-primary' : 'text-red-400')}>{m.isWin ? '胜利' : '失败'}</span>
-                  </div>
-                ))}
-              </div>
+              {matches === null ? (
+                <div className="flex justify-center py-4">
+                  <div className="w-6 h-6 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+                </div>
+              ) : matches.length === 0 ? (
+                <p className="text-sm text-surface-400 py-4 text-center">暂无比赛记录</p>
+              ) : (
+                <div className="space-y-1">
+                  {matches.map((m, i) => (
+                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-hover transition-colors cursor-pointer">
+                      <span className={'w-2 h-2 rounded-full ' + (m.isWin ? 'bg-primary' : 'bg-red-500')} />
+                      <span className="flex-1 text-sm text-white">{m.mapName || m.map || 'de_dust2'}</span>
+                      <span className={'text-sm font-bold ' + (m.isWin ? 'text-primary' : 'text-red-400')}>
+                        {m.isWin ? '胜利' : '失败'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           </motion.div>
         </motion.div>
@@ -113,7 +132,6 @@ export default function DashboardPage() {
                 <span className="text-sm text-primary">运行正常</span>
               </div>
               <p className="text-xs text-surface-400">上次扫描: --</p>
-              <Button variant="ghost" className="w-full mt-4">查看详情</Button>
             </Card>
           </motion.div>
           <motion.div variants={fadeUp}>
@@ -123,20 +141,7 @@ export default function DashboardPage() {
               <Badge variant="warning" className="mt-3">2026-04-26</Badge>
             </Card>
           </motion.div>
-          <motion.div variants={fadeUp}>
-            <Card variant="default">
-              <h3 className="text-base font-bold text-white mb-3">系统状态</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-surface-400">运行时间</span><span className="text-white font-mono">0h 0m</span></div>
-                <div className="flex justify-between"><span className="text-surface-400">反作弊</span><Badge variant="primary">运行中</Badge></div>
-              </div>
-            </Card>
-          </motion.div>
         </motion.div>
-      </div>
-
-      <div className="mt-6 p-4 bg-card rounded-md border border-border">
-        <p className="text-xs text-surface-400">背水对战平台 v2.0 Aurora</p>
       </div>
     </motion.div>
   )
