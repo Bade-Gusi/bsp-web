@@ -37,14 +37,20 @@ export function AuthPage() {
             className="text-surface-400 text-sm hover:text-primary transition-colors">
             {mode === 'login' ? '注册账号' : '返回登录'}
           </button>
-          <button className="text-surface-400 text-sm hover:text-primary transition-colors">忘记密码</button>
+          <button onClick={() => alert('请联系管理员重置密码')}
+            className="text-surface-400 text-sm hover:text-primary transition-colors">
+            忘记密码
+          </button>
         </div>
         <div className="flex justify-center gap-4 mt-3">
-          <button className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</button>
+          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+            className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</button>
+          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+            className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</button>
+          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+            className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</button>
         </div>
       </motion.div>
     </div>
