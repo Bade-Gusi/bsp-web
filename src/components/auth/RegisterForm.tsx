@@ -33,13 +33,13 @@ export function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void 
 
   if (success) return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-      <p className="text-primary text-lg font-bold">注册成功！</p>
-      <p className="text-surface-300 mt-2">即将跳转到登录页...</p>
+      <p className="text-primary text-lg font-bold">注册成功</p>
+      <p className="text-surface-300 text-sm mt-2">即将跳转到登录页</p>
     </motion.div>
   )
 
   return (
-    <motion.form key="register" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} onSubmit={handleSubmit} className="space-y-4">
+    <motion.form key="register" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onSubmit={handleSubmit} className="space-y-4">
       <Input label="用户名" placeholder="登录用" value={username} onChange={(e) => setUsername(e.target.value)} />
       <Input label="昵称" placeholder="游戏中显示的名称" value={nickname} onChange={(e) => setNickname(e.target.value)} />
       <Input label="密码" type="password" placeholder="至少6位" value={password} onChange={(e) => setPassword(e.target.value)} />

@@ -9,22 +9,17 @@ export function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-surface">
-      <div className="absolute -top-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-[120px]" />
-      <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-accent/5 rounded-full blur-[100px]" />
-
+    <div className="min-h-screen flex items-center justify-center bg-surface">
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="w-[420px]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-[400px]"
       >
-        <div className="text-center mb-9">
-          <div className="w-20 h-20 mx-auto mb-5 rounded-[22px] bg-elevated border border-primary/30 flex items-center justify-center">
-            <span className="text-3xl">🎮</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white">背水对战平台</h1>
-          <p className="text-surface-400 text-xs font-mono mt-2">BEISHUI AURORA v2.0</p>
+        <div className="text-center mb-8">
+          <img src="/bsp-web/default_avatar.png" className="w-16 h-16 mx-auto mb-4 rounded-xl bg-elevated border border-primary/30 object-cover" alt="logo" />
+          <h1 className="text-2xl font-bold text-white">背水对战平台</h1>
+          <p className="text-surface-400 text-xs font-mono mt-2">BEISHUI</p>
         </div>
 
         <div className="card">
@@ -37,22 +32,20 @@ export function AuthPage() {
           </AnimatePresence>
         </div>
 
-        <div className="flex justify-center gap-6 mt-6">
+        <div className="flex justify-center gap-6 mt-5">
           <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
             className="text-surface-400 text-sm hover:text-primary transition-colors">
             {mode === 'login' ? '注册账号' : '返回登录'}
           </button>
           <button className="text-surface-400 text-sm hover:text-primary transition-colors">忘记密码</button>
-          <button className="text-surface-400 text-sm hover:text-primary transition-colors">服务器</button>
         </div>
-        <div className="flex justify-center gap-4 mt-4">
-          <button className="text-surface-400 text-xs underline hover:text-primary transition-colors">用户协议</button>
+        <div className="flex justify-center gap-4 mt-3">
+          <button className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button className="text-surface-400 text-xs underline hover:text-primary transition-colors">隐私政策</button>
+          <button className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button className="text-surface-400 text-xs underline hover:text-primary transition-colors">平台声明</button>
+          <button className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</button>
         </div>
-        <p className="text-center text-surface-500 text-xs font-mono mt-6">v2.0.0 Aurora</p>
       </motion.div>
     </div>
   )
