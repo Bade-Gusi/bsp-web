@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
+import Link from 'next/link'
 
 export function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -37,20 +38,16 @@ export function AuthPage() {
             className="text-surface-400 text-sm hover:text-primary transition-colors">
             {mode === 'login' ? '注册账号' : '返回登录'}
           </button>
-          <button onClick={() => alert('请联系管理员重置密码')}
-            className="text-surface-400 text-sm hover:text-primary transition-colors">
+          <Link href="/forgot-password" className="text-surface-400 text-sm hover:text-primary transition-colors">
             忘记密码
-          </button>
+          </Link>
         </div>
         <div className="flex justify-center gap-4 mt-3">
-          <button onClick={() => window.open('/legal', '_blank')}
-            className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</button>
+          <Link href="/legal" className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</Link>
           <span className="text-surface-600 text-xs">|</span>
-          <button onClick={() => window.open('/legal', '_blank')}
-            className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</button>
+          <Link href="/legal" className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</Link>
           <span className="text-surface-600 text-xs">|</span>
-          <button onClick={() => window.open('/legal', '_blank')}
-            className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</button>
+          <Link href="/legal" className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</Link>
         </div>
       </motion.div>
     </div>

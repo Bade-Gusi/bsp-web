@@ -51,9 +51,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     setPageTitle(t[pathname] || '背水对战平台')
   }, [pathname])
 
+  const publicPaths = ['/legal', '/forgot-password']
+  const isPublic = publicPaths.includes(pathname)
   const showContent = !loading && init
-  const showAuth = showContent && !isAuthenticated
-  const showApp = showContent && isAuthenticated
+  const showAuth = showContent && !isAuthenticated && !isPublic
+  const showApp = showContent && (isAuthenticated || isPublic)
 
   return (
     <html lang="zh-CN" className="dark">
@@ -61,7 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-surface text-white overflow-hidden">
         {!showContent && <LoadingOverlay />}
         {showAuth && <AuthPage />}
-        {showApp && (
+        {isPublic && showContent && <div className="min-h-screen bg-surface">{children}</div>}
+        {showApp && !isPublic && (
           <div className="flex h-screen">
             <nav className="w-56 h-screen bg-card border-r border-border flex flex-col shrink-0">
               <div className="px-5 py-6 border-b border-border/50 flex items-center gap-3">
