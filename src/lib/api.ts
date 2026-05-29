@@ -1,4 +1,7 @@
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+// 浏览器端走同源代理（/api/* → next.config.js rewrites → localhost:5000）
+// 服务端渲染时直连后端
+const isBrowser = typeof window !== 'undefined'
+const API = isBrowser ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')
 
 class ApiClient {
   private token: string | null = null
