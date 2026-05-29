@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  basePath: '/bsp-web',
   images: { unoptimized: true },
-  trailingSlash: true,
+  basePath: '',
 }
 
 module.exports = nextConfig

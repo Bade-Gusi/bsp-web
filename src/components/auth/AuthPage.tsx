@@ -17,7 +17,7 @@ export function AuthPage() {
         className="w-[400px]"
       >
         <div className="text-center mb-8">
-          <img src="/bsp-web/default_avatar.png" className="w-16 h-16 mx-auto mb-4 rounded-xl bg-elevated border border-primary/30 object-cover" alt="logo" />
+          <img src="/default_avatar.png" className="w-16 h-16 mx-auto mb-4 rounded-xl bg-elevated border border-primary/30 object-cover" alt="logo" />
           <h1 className="text-2xl font-bold text-white">背水对战平台</h1>
           <p className="text-surface-400 text-xs font-mono mt-2">BEISHUI</p>
         </div>
@@ -43,13 +43,13 @@ export function AuthPage() {
           </button>
         </div>
         <div className="flex justify-center gap-4 mt-3">
-          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+          <button onClick={() => window.open('/legal', '_blank')}
             className="text-surface-500 text-xs hover:text-primary transition-colors">用户协议</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+          <button onClick={() => window.open('/legal', '_blank')}
             className="text-surface-500 text-xs hover:text-primary transition-colors">隐私政策</button>
           <span className="text-surface-600 text-xs">|</span>
-          <button onClick={() => window.open('/bsp-web/legal', '_blank')}
+          <button onClick={() => window.open('/legal', '_blank')}
             className="text-surface-500 text-xs hover:text-primary transition-colors">平台声明</button>
         </div>
       </motion.div>

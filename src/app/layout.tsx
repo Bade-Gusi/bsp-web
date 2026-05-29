@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex h-screen">
             <nav className="w-56 h-screen bg-card border-r border-border flex flex-col shrink-0">
               <div className="px-5 py-6 border-b border-border/50 flex items-center gap-3">
-                <img src="/bsp-web/default_avatar.png" className="w-9 h-9 rounded-lg object-cover" alt="" />
+                <img src="/default_avatar.png" className="w-9 h-9 rounded-lg object-cover" alt="" />
                 <div>
                   <h1 className="text-sm font-bold text-white">背水对战平台</h1>
                   <p className="text-[10px] text-surface-400 font-mono">BEISHUI</p>
