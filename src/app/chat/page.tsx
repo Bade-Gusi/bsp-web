@@ -8,7 +8,7 @@ import { toast } from '@/components/ui/Toast'
 import { useAuthStore } from '@/stores/authStore'
 import * as signalR from '@microsoft/signalr'
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'
+const API = process.env.NEXT_PUBLIC_API_URL || ''
 
 interface ChatMsg { id: number; from: string; text: string; time: string; isMine?: boolean }
 

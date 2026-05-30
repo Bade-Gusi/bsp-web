@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
+import { LatestBroadcastBanner } from '@/components/ui/LatestBroadcastBanner'
 
 const stagger = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } }
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -57,8 +58,13 @@ export default function DashboardPage() {
         { label: '总场次', value: '--', color: 'text-surface-300' },
       ]
 
+  const launchGame = () => window.open('steam://rungameid/730', '_blank')
+
+  const handleLaunchGame = () => window.open('steam://rungameid/730', '_blank')
+
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger}>
+      <LatestBroadcastBanner />
       <div className="grid grid-cols-4 gap-4 mb-6">
         {displayStats.map((s, i) => (
           <motion.div key={i} variants={scaleIn}>
@@ -80,6 +86,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-surface-300 mt-1">开始一场5v5竞技对战</p>
                 </div>
                 <Link href="/match"><Button size="lg">开始匹配</Button></Link>
+                <Button variant="secondary" size="sm" onClick={handleLaunchGame} className="ml-2">启动CS2</Button>
               </div>
             </Card>
           </motion.div>
