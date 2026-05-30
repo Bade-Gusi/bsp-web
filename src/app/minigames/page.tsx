@@ -10,7 +10,7 @@ const games = [
   { name: '井字棋', desc: '经典三子棋对局', icon: '⭕', href: '/minigames/tictactoe' },
   { name: '贪吃蛇', desc: '控制蛇吃到更多食物', icon: '🐍', href: '/minigames/snake' },
   { name: '记忆翻牌', desc: '翻牌匹配测试记忆力', icon: '🎮', href: '/minigames/memory' },
-  { name: '反应测试', desc: '测试你的反应速度', icon: '⚡', href: '/minigames/reaction' },
+  { name: '反应测试', desc: '测试你的反应速度', icon: '⚡', href: '/reaction-game' },
 ];
 
 export default function MinigamesPage() {

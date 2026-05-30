@@ -25,6 +25,8 @@ const navItems = [
   { label: '1v1对战', path: '/duel' },
   { label: '房间大厅', path: '/rooms' },
   { label: '服务器', path: '/servers' },
+  { label: '管理中心', path: '/server-manager' },
+  { label: '语音', path: '/voice' },
   { label: '好友', path: '/friends' },
   { label: '聊天', path: '/chat' },
   { label: '排行榜', path: '/leaderboard' },
@@ -50,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '/servers': '服务器', '/friends': '好友', '/chat': '聊天', '/leaderboard': '排行榜',
       '/achievements': '成就', '/market': '皮肤市场', '/welfare': '背水公益',
       '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播',
+      '/server-manager': '管理中心', '/voice': '语音', '/reaction-game': '反应测试',
     }
     setPageTitle(t[pathname] || '背水对战平台')
   }, [pathname])
