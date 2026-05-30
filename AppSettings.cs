@@ -35,6 +35,9 @@ namespace BeiShuiCS2
         // 新增：启动时自动创建桌面快捷方式
         public bool AutoCreateShortcut { get; set; } = true;
 
+        // 广播历史
+        public string BroadcastHistory { get; set; } = "";
+
         // CS2 路径
         public string LastCS2Path { get; set; } = "";
 

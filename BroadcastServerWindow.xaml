@@ -52,6 +52,29 @@
                     <!-- 状态提示 -->
                     <TextBlock x:Name="txtStatus" FontSize="12"
                                HorizontalAlignment="Center" Margin="0,10,0,0"/>
+
+                    <!-- 刷新区域 -->
+                    <Border BorderBrush="{StaticResource BorderPrimaryBrush}" BorderThickness="0,1,0,0"
+                            Margin="0,16,0,0" Padding="0,12,0,0">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="获取最新广播" FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" x:Name="btnRefresh" Content="刷新"
+                                        Style="{StaticResource BtnGhost}" Height="30" FontSize="11"
+                                        Padding="12,0" Click="BtnRefresh_Click"/>
+                            </Grid>
+                            <TextBlock x:Name="txtRefreshResult" FontSize="11"
+                                       Margin="0,6,0,0"/>
+                            <TextBlock x:Name="txtHistory" FontSize="10"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,6,0,0" LineHeight="18"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <!-- 密码错误提示 -->
