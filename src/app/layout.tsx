@@ -34,6 +34,7 @@ const navItems = [
   { label: '皮肤市场', path: '/market' },
   { label: '背水公益', path: '/welfare' },
   { label: '广播', path: '/admin/broadcast' },
+  { label: '广播记录', path: '/broadcast-history' },
   { label: '设置', path: '/settings' },
 ]
 
