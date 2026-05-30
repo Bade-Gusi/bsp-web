@@ -8,9 +8,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { toast } from '@/components/ui/Toast'
 
-interface ServerEntry {
-  id: string; name: string; ip: string; port: number; rcon?: string; addedAt: string
-}
+interface ServerEntry { id: string; name: string; ip: string; port: number; rcon?: string; addedAt: string }
 
 export default function ServerManagerPage() {
   const [tab, setTab] = useState('servers')
@@ -44,8 +42,7 @@ export default function ServerManagerPage() {
 
   const handleEdit = () => {
     if (!selected) return
-    setServers(servers.map(s => s.id === selected ? { ...s, name: editName.trim(), ip: editIp.trim(), port: parseInt(editPort) || 27015 } : s))
-    localStorage.setItem('bsp_servers', JSON.stringify(servers))
+    saveServers(servers.map(s => s.id === selected ? { ...s, name: editName.trim(), ip: editIp.trim(), port: parseInt(editPort) || 27015 } : s))
     setShowEdit(false); toast('已更新', 'success')
   }
 
@@ -55,18 +52,28 @@ export default function ServerManagerPage() {
     toast('已删除', 'info')
   }
 
+  const launchGame = () => window.open('steam://rungameid/730', '_blank')
+
   const connectToServer = (ip: string, port: number) => {
-    try { window.open(`steam://connect/${ip}:${port}`, '_blank') } catch { toast('连接失败', 'error') }
+    const addr = `${ip}:${port}`
+    try {
+      // 尝试 steam 协议连接
+      window.open(`steam://connect/${addr}`, '_blank')
+      toast('正在启动CS2并连接...', 'info')
+    } catch { toast('连接失败', 'error') }
   }
 
-  const openFolder = (folder: string) => toast('文件管理功能', 'info')
-  const cleanCache = () => { toast('缓存已清理', 'success'); setDiskInfo(prev => ({ ...prev, cache: '0 MB' })) }
-  const cleanScreenshots = () => { toast('截图已清理', 'success'); setDiskInfo(prev => ({ ...prev, screenshots: '0 MB' })) }
-  const exportData = () => { toast('数据已导出', 'success') }
+  const copyAddress = (ip: string, port: number) => {
+    navigator.clipboard.writeText(`${ip}:${port}`)
+    toast('地址已复制', 'success')
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <h2 className="text-xl font-bold text-white mb-6">管理中心</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-white">管理中心</h2>
+        <Button onClick={launchGame}>启动 CS2</Button>
+      </div>
 
       <div className="flex gap-2 mb-6">
         {[{ id: 'servers', label: '服务器' }, { id: 'data', label: '数据管理' }].map(t => (
@@ -79,11 +86,12 @@ export default function ServerManagerPage() {
 
       {tab === 'servers' && (
         <div className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button size="sm" onClick={() => { setEditName(''); setEditIp(''); setShowAdd(true) }}>添加服务器</Button>
             <Button variant="ghost" size="sm" onClick={() => { if (selected) { const s = servers.find(x => x.id === selected); if (s) { setEditName(s.name); setEditIp(s.ip); setEditPort(String(s.port)); setShowEdit(true) } } }}>编辑</Button>
             <Button variant="ghost" size="sm" onClick={() => { if (selected) handleDelete(selected) }}>删除</Button>
             <Button variant="secondary" size="sm" onClick={() => { if (selected) { const s = servers.find(x => x.id === selected); if (s) connectToServer(s.ip, s.port) } }} disabled={!selected}>连接</Button>
+            <Button variant="secondary" size="sm" onClick={launchGame}>启动CS2</Button>
           </div>
 
           {servers.length === 0 ? <p className="text-surface-400 text-sm">暂无服务器，点击"添加"</p>
@@ -94,9 +102,10 @@ export default function ServerManagerPage() {
                   <p className="text-sm text-white font-semibold">{s.name}</p>
                   <p className="text-xs text-surface-400 font-mono">{s.ip}:{s.port}</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <span className="text-xs text-surface-500">{s.addedAt}</span>
                   <Button size="sm" onClick={() => connectToServer(s.ip, s.port)}>连接</Button>
+                  <Button variant="ghost" size="sm" onClick={() => copyAddress(s.ip, s.port)}>复制</Button>
                 </div>
               </div>
             ))}
@@ -109,15 +118,13 @@ export default function ServerManagerPage() {
             <h3 className="text-sm font-bold text-white mb-3">文件管理</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between"><span className="text-sm text-surface-300">截图目录</span><span className="text-xs text-surface-400">{diskInfo.screenshots}</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-surface-300">Demo目录</span><span className="text-xs text-surface-400">{diskInfo.demos}</span></div>
               <div className="flex items-center justify-between"><span className="text-sm text-surface-300">缓存</span><span className="text-xs text-surface-400">{diskInfo.cache}</span></div>
             </div>
             <div className="flex gap-2 mt-4 flex-wrap">
-              <Button variant="ghost" size="sm" onClick={() => openFolder('screenshots')}>打开截图</Button>
-              <Button variant="ghost" size="sm" onClick={() => openFolder('demos')}>打开Demo</Button>
-              <Button variant="ghost" size="sm" onClick={cleanScreenshots}>清理截图</Button>
-              <Button variant="ghost" size="sm" onClick={cleanCache}>清理缓存</Button>
-              <Button variant="ghost" size="sm" onClick={exportData}>导出数据</Button>
+              <Button variant="ghost" size="sm">打开目录</Button>
+              <Button variant="ghost" size="sm">清理截图</Button>
+              <Button variant="ghost" size="sm">清理缓存</Button>
+              <Button variant="ghost" size="sm">导出数据</Button>
             </div>
           </Card>
         </div>
