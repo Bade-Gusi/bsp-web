@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import { LatestBroadcastBanner } from '@/components/ui/LatestBroadcastBanner'
+import { VERSION_STRING } from '@/lib/version'
 
 const stagger = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } }
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const { user, token } = useAuthStore()
   const [stats, setStats] = useState<{ todayMatches: number; wins: number; losses: number; rating: number } | null>(null)
   const [matches, setMatches] = useState<any[] | null>(null)
+  const [broadcasts, setBroadcasts] = useState<{ addr: string; time: string }[]>([])
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -37,6 +39,15 @@ export default function DashboardPage() {
           if (Array.isArray(m)) setMatches(m.slice(0, 5))
         }
       } catch {}
+      // 加载广播记录
+      try {
+        const res = await fetch('/api/admin/latest-broadcast')
+        if (res.ok) {
+          const d = await res.json()
+          if (d?.serverAddress) setBroadcasts([{ addr: d.serverAddress, time: d.broadcastedAt || '' }])
+        }
+      } catch {}
+      try { const c = localStorage.getItem('broadcast_history'); if (c) setBroadcasts(prev => [...JSON.parse(c), ...prev].slice(0, 10)) } catch {}
       setLoaded(true)
     }
     load()
@@ -141,6 +152,24 @@ export default function DashboardPage() {
               <p className="text-xs text-surface-400">上次扫描: --</p>
             </Card>
           </motion.div>
+
+          <motion.div variants={fadeUp}>
+            <Card variant="default">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-white">广播记录</h3>
+                <a href="/broadcast-history" className="text-xs text-primary hover:text-accent">查看全部</a>
+              </div>
+              {broadcasts.length === 0 ? <p className="text-xs text-surface-400">暂无广播</p>
+                : broadcasts.slice(0, 4).map((b, i) => (
+                  <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                    <span className="text-sm font-mono text-primary">{b.addr}</span>
+                    <button onClick={() => window.open('steam://connect/' + b.addr, '_blank')}
+                      className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded hover:bg-primary/30">连接</button>
+                  </div>
+                ))}
+            </Card>
+          </motion.div>
+
           <motion.div variants={fadeUp}>
             <Card variant="default">
               <h3 className="text-base font-bold text-white mb-2">系统公告</h3>
