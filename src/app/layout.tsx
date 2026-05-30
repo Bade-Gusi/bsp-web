@@ -10,7 +10,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
 import { AuthPage } from '@/components/auth/AuthPage'
 import { ToastContainer } from '@/components/ui/Toast'
-
+import { FriendRequestNotifier } from '@/components/ui/FriendRequestNotifier'
 
 const pt = {
   initial: { opacity: 0, y: 20 },
@@ -68,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head><meta charSet="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>背水对战平台</title></head>
       <body className="bg-surface text-white overflow-hidden">
         <ToastContainer />
+        <FriendRequestNotifier />
         {!showContent && <LoadingOverlay />}
         {showAuth && <AuthPage />}
         {isPublic && showContent && <div className="min-h-screen bg-surface">{children}</div>}
