@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge'
 import { toast } from '@/components/ui/Toast'
 import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
+import { VERSION_STRING } from '@/lib/version'
 
 export default function ProfilePage() {
   const { user, token } = useAuthStore()
@@ -135,7 +136,7 @@ export default function ProfilePage() {
       )}
 
       <div className="mt-6 p-4 bg-card rounded-md border border-border flex items-center justify-between">
-        <p className="text-xs text-surface-400">背水对战平台 v2.0.0 Aurora</p>
+        <p className="text-xs text-surface-400">{VERSION_STRING}</p>
         <a href="/changelog" className="text-xs text-primary hover:text-accent">更新日志</a>
       </div>
     </motion.div>

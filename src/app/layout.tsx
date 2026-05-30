@@ -11,6 +11,7 @@ import { api } from '@/lib/api'
 import { AuthPage } from '@/components/auth/AuthPage'
 import { ToastContainer } from '@/components/ui/Toast'
 import { FriendRequestNotifier } from '@/components/ui/FriendRequestNotifier'
+import { VERSION_STRING } from '@/lib/version'
 
 const pt = {
   initial: { opacity: 0, y: 20 },
@@ -95,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 })}
               </div>
               <div className="px-4 py-3 border-t border-border/50 space-y-1">
-                <Link href="/changelog" className="block text-xs text-surface-500 hover:text-primary transition-colors">v2.0.0 Aurora</Link>
+                <Link href="/changelog" className="block text-xs text-surface-500 hover:text-primary transition-colors">{VERSION_STRING}</Link>
                 <button onClick={() => useAuthStore.getState().logout()} className="text-xs text-surface-400 hover:text-white transition-colors">退出登录</button>
               </div>
             </nav>
