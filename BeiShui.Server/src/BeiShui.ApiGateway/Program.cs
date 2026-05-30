@@ -1,6 +1,7 @@
 using System.Text;
 using BeiShui.ApiGateway.Data;
 using BeiShui.ApiGateway.Hubs;
+using BeiShui.ApiGateway.Middleware;
 using BeiShui.ApiGateway.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,7 @@ var app = builder.Build();
 
 // === Middleware ===
 app.UseCors();
+app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -92,5 +94,6 @@ app.MapHub<MatchHub>("/hubs/match");
 app.MapHub<GameHub>("/hubs/game");
 app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<CallHub>("/callhub");
+app.MapHub<BroadcastHub>("/hubs/broadcast");
 
 app.Run();

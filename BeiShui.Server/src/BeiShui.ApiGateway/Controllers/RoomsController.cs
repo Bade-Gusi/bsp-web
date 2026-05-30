@@ -29,7 +29,7 @@ public class RoomsController : BaseController
                 r.Mode,
                 r.MaxPlayers,
                 r.CurrentPlayers,
-                r.HasPassword = !string.IsNullOrEmpty(r.Password),
+                HasPassword = !string.IsNullOrEmpty(r.Password),
                 HostName = r.HostUser!.Nickname,
                 r.CreatedAt
             })
@@ -53,7 +53,7 @@ public class RoomsController : BaseController
         return Ok(new
         {
             room.RoomCode, room.MapName, room.Mode, room.MaxPlayers, room.CurrentPlayers,
-            room.HasPassword = !string.IsNullOrEmpty(room.Password),
+            HasPassword = !string.IsNullOrEmpty(room.Password),
             room.Status,
             HostName = room.HostUser?.Nickname,
             GameName = room.Game?.Name,

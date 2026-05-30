@@ -20,7 +20,8 @@ public class HolidayController : ControllerBase
         var holiday = await _db.Set<Holiday>()
             .Where(h => h.Date == today && h.IsActive)
             .FirstOrDefaultAsync();
-        return Ok(holiday ?? new { });
+        if (holiday == null) return Ok(new { });
+        return Ok(holiday);
     }
 
     [HttpGet("list")]

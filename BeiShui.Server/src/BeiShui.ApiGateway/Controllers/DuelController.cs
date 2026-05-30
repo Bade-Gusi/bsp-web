@@ -85,7 +85,7 @@ public class DuelController : BaseController
         {
             var fromUser = invite.FromUser;
             var gs = await _serverManager.CreateServer(
-                fromUserId: userId,
+                hostUserId: userId,
                 hostName: $"{fromUser?.Nickname ?? "玩家"} VS {GetUsername()}",
                 mapName: invite.MapName,
                 mode: 0,
