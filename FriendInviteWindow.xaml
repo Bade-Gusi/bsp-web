@@ -1,0 +1,61 @@
+<Window x:Class="BeiShuiCS2.FriendInviteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="邀请好友" 
+        Width="420" Height="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <TextBlock Grid.Row="0" Text="邀请好友" Style="{StaticResource PageHeader}"/>
+
+        <!-- 搜索 -->
+        <Border Grid.Row="1" Background="{StaticResource BgElevatedBrush}"
+                CornerRadius="{StaticResource RadiusMedium}"
+                BorderBrush="{StaticResource BorderPrimaryBrush}"
+                BorderThickness="1" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe Fluent Icons"
+                           FontSize="16" Foreground="{StaticResource TextMutedBrush}"
+                           Margin="12,0,0,0" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" x:Name="txtSearch"
+                         Background="Transparent" BorderThickness="0"
+                         Padding="12,10" Foreground="{StaticResource TextPrimaryBrush}"
+                         FontSize="14" CaretBrush="{StaticResource PrimaryBrush}"
+                         TextChanged="TxtSearch_TextChanged"/>
+            </Grid>
+        </Border>
+
+        <!-- 好友列表 -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="friendsPanel" Margin="12">
+                    <!-- 动态生成 -->
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- 底部按钮 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Margin="0,16,0,0">
+            <Button x:Name="btnSendInvite" Content="发送邀请"
+                    Style="{StaticResource BtnPrimary}"
+                    Width="140" Height="44" Margin="0,0,12,0"
+                    Click="SendInvite_Click"/>
+            <Button Content="取消" Style="{StaticResource BtnGhost}"
+                    Width="120" Height="44" Click="Cancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

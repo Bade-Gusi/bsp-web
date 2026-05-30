@@ -9,6 +9,8 @@ import { LoadingOverlay } from '@/components/layout/LoadingOverlay'
 import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
 import { AuthPage } from '@/components/auth/AuthPage'
+import { ToastContainer } from '@/components/ui/Toast'
+import { ServerBroadcastReceiver } from '@/components/ui/ServerBroadcastReceiver'
 
 const pt = {
   initial: { opacity: 0, y: 20 },
@@ -29,6 +31,7 @@ const navItems = [
   { label: '成就', path: '/achievements' },
   { label: '皮肤市场', path: '/market' },
   { label: '背水公益', path: '/welfare' },
+  { label: '广播', path: '/admin/broadcast' },
   { label: '设置', path: '/settings' },
 ]
 
@@ -46,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '/dashboard': '首页', '/match': '快速匹配', '/duel': '1v1对战', '/rooms': '房间大厅',
       '/servers': '服务器', '/friends': '好友', '/chat': '聊天', '/leaderboard': '排行榜',
       '/achievements': '成就', '/market': '皮肤市场', '/welfare': '背水公益',
-      '/settings': '设置', '/minigames': '小游戏',
+      '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播',
     }
     setPageTitle(t[pathname] || '背水对战平台')
   }, [pathname])
@@ -61,6 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN" className="dark">
       <head><meta charSet="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>背水对战平台</title></head>
       <body className="bg-surface text-white overflow-hidden">
+        <ToastContainer />
+        <ServerBroadcastReceiver />
         {!showContent && <LoadingOverlay />}
         {showAuth && <AuthPage />}
         {isPublic && showContent && <div className="min-h-screen bg-surface">{children}</div>}

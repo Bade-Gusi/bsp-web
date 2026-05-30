@@ -1,0 +1,65 @@
+version: '3.8'
+
+# ===== 完整部署（含服务容器）=====
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: beishui-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: beishui
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: beishui-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 5s
+      retries: 10
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.ApiGateway
+    container_name: beishui-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__Default=server=mysql;port=3306;database=beishui;user=root;password=root123
+      - Redis__Connection=redis:6379
+      - Jwt__Key=BeiShuiDefaultJwtKeyForDevelopment_ChangeInProduction!
+      - Jwt__Issuer=BeiShui
+
+  match-service:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.MatchService
+    container_name: beishui-match
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - Redis__Connection=redis:6379
+
+volumes:
+  mysql_data:

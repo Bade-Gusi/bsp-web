@@ -1,0 +1,88 @@
+<?xml version='1.0'?>
+<Obfuscator>
+  <!-- {TargetDir} 占位符由 csproj Target 在编译时替换为实际输出路径 -->
+
+  <!-- 主程序集 -->
+  <Module file="{TargetDir}BeiShuiCS2.dll">
+    <!-- ===== WPF 窗口类型（必须跳过，XAML BAML 加载依赖类型名）===== -->
+    <SkipType name="BeiShuiCS2.MainWindow" />
+    <SkipType name="BeiShuiCS2.App" />
+    <SkipType name="BeiShuiCS2.SettingsWindow" />
+    <SkipType name="BeiShuiCS2.LoginWindow" />
+    <SkipType name="BeiShuiCS2.RegisterWindow" />
+    <SkipType name="BeiShuiCS2.QuickMatchWindow" />
+    <SkipType name="BeiShuiCS2.MatchingWindow" />
+    <SkipType name="BeiShuiCS2.AcceptMatchWindow" />
+    <SkipType name="BeiShuiCS2.JoinRoomWindow" />
+    <SkipType name="BeiShuiCS2.CreateRoomWindow" />
+    <SkipType name="BeiShuiCS2.RoomDetailWindow" />
+    <SkipType name="BeiShuiCS2.ServerManagerWindow" />
+    <SkipType name="BeiShuiCS2.ChatWindow" />
+    <SkipType name="BeiShuiCS2.PrivateChatWindow" />
+    <SkipType name="BeiShuiCS2.AddFriendWindow" />
+    <SkipType name="BeiShuiCS2.FriendInviteWindow" />
+    <SkipType name="BeiShuiCS2.ConfirmDeleteFriendWindow" />
+    <SkipType name="BeiShuiCS2.InviteNotificationWindow" />
+    <SkipType name="BeiShuiCS2.FirstLaunchWindow" />
+    <SkipType name="BeiShuiCS2.ForgotPasswordWindow" />
+    <SkipType name="BeiShuiCS2.MatchSetupWindow" />
+    <SkipType name="BeiShuiCS2.MatchDetailWindow" />
+    <SkipType name="BeiShuiCS2.InputDialogWindow" />
+    <SkipType name="BeiShuiCS2.VerifyWindow" />
+    <SkipType name="BeiShuiCS2.PathSelectionWindow" />
+    <SkipType name="BeiShuiCS2.StatsOverviewWindow" />
+    <SkipType name="BeiShuiCS2.DemoPlayerWindow" />
+    <SkipType name="BeiShuiCS2.LeaderboardWindow" />
+    <SkipType name="BeiShuiCS2.AchievementsWindow" />
+    <SkipType name="BeiShuiCS2.SkinMarketWindow" />
+    <SkipType name="BeiShuiCS2.GameCenterWindow" />
+    <SkipType name="BeiShuiCS2.TicTacToeWindow" />
+    <SkipType name="BeiShuiCS2.MemoryGameWindow" />
+    <SkipType name="BeiShuiCS2.SnakeGameWindow" />
+    <SkipType name="BeiShuiCS2.ReactionGameWindow" />
+    <SkipType name="BeiShuiCS2.AntiCheatStatusWindow" />
+    <SkipType name="BeiShuiCS2.AntiCheatWarningWindow" />
+    <SkipType name="BeiShuiCS2.AntiCheatAlertWindow" />
+    <SkipType name="BeiShuiCS2.AntiCheatBlockedWindow" />
+    <SkipType name="BeiShuiCS2.BlockedDetailWindow" />
+    <SkipType name="BeiShuiCS2.SteamUserSelector" />
+    <SkipType name="BeiShuiCS2.LoginHistoryWindow" />
+    <!-- 遗漏的两个 XAML 窗口类型 -->
+    <SkipType name="BeiShuiCS2.AntiCheatHeartbeatWindow" />
+    <SkipType name="BeiShuiCS2.AntiCheatViolationWindow" />
+
+    <!-- ===== XAML 绑定的模型类（必须跳过属性名以支持 {Binding}）===== -->
+    <SkipType name="BeiShuiCS2.AppSettings" />
+  </Module>
+
+  <Settings>
+    <!-- 基础重命名 -->
+    <Rename>true</Rename>
+    <RenameFields>true</RenameFields>
+    <RenameProperties>true</RenameProperties>
+    <RenameEvents>true</RenameEvents>
+    <RenameParams>true</RenameParams>
+    <RenameGenericParams>true</RenameGenericParams>
+
+    <!-- 控制流混淆（防止 dnSpy 直接读懂逻辑） -->
+    <ControlFlow>true</ControlFlow>
+
+    <!-- 反 ILDasm 保护 -->
+    <AntiILDasm>true</AntiILDasm>
+
+    <!-- 反篡改（检测到被修改后自动退出） -->
+    <AntiTamper>true</AntiTamper>
+
+    <!-- 方法优化 -->
+    <OptimizeMethods>true</OptimizeMethods>
+
+    <!-- 字符串加密（Window 类型已被跳过，不会影响 XAML 解析） -->
+    <StringEncryption>true</StringEncryption>
+
+    <!-- 保持公开 API 签名（保护 XAML 绑定属性名和事件处理器） -->
+    <KeepPublicApi>true</KeepPublicApi>
+
+    <!-- 隐藏内部 API -->
+    <HidePrivateApi>true</HidePrivateApi>
+  </Settings>
+</Obfuscator>

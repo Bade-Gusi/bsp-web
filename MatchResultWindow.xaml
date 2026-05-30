@@ -1,0 +1,262 @@
+<Window x:Class="BeiShuiCS2.MatchResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="比赛结算"
+        Width="760" Height="750"
+        MinWidth="600" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Canvas x:Name="particleCanvas" IsHitTestVisible="False" Grid.RowSpan="5"/>
+
+            <!-- 结果标题 -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,20" HorizontalAlignment="Center">
+                <TextBlock x:Name="txtResultTitle" Text="胜利！" FontSize="36" FontWeight="Black"
+                       Foreground="{StaticResource PrimaryBrush}"
+                       HorizontalAlignment="Center"/>
+                <TextBlock x:Name="txtResultSub" Text="反恐精英获胜"
+                       FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- 比分横幅 -->
+            <Border Grid.Row="1" CornerRadius="{StaticResource RadiusMedium}"
+                Background="{StaticResource BgCardBrush}"
+                BorderBrush="{StaticResource BorderPrimaryBrush}"
+                BorderThickness="1" Padding="24,16"
+                Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <Border Width="48" Height="48" CornerRadius="24"
+                            Background="{StaticResource PrimaryBrush}" Margin="0,0,0,8">
+                            <TextBlock Text="CT" FontSize="16" FontWeight="Bold"
+                                   Foreground="White" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="txtFinalCtScore" Text="13" FontSize="48" FontWeight="Black"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center" FontFamily="{StaticResource FontMono}"/>
+                        <TextBlock Text="反恐精英" FontSize="12"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="24,0">
+                        <TextBlock Text=":" FontSize="40" FontWeight="Bold"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <Border Width="48" Height="48" CornerRadius="24"
+                            Background="{StaticResource WarningBrush}" Margin="0,0,0,8">
+                            <TextBlock Text="T" FontSize="16" FontWeight="Bold"
+                                   Foreground="White" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="txtFinalTScore" Text="9" FontSize="48" FontWeight="Black"
+                               Foreground="{StaticResource WarningBrush}"
+                               HorizontalAlignment="Center" FontFamily="{StaticResource FontMono}"/>
+                        <TextBlock Text="恐怖分子" FontSize="12"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- MVP -->
+            <Border x:Name="mvpPanel" Grid.Row="2" CornerRadius="{StaticResource RadiusMedium}"
+                Background="{StaticResource BgElevatedBrush}"
+                BorderBrush="{StaticResource WarningBrush}"
+                BorderThickness="2" Padding="20,16"
+                Margin="0,0,0,16" Visibility="Visible">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Width="52" Height="52" CornerRadius="26"
+                        Background="{StaticResource WarningGradientBrush}" Margin="0,0,16,0">
+                        <TextBlock x:Name="txtMvpInitial" Text="⭐"
+                               FontSize="24" HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="MVP" FontSize="11" Foreground="{StaticResource WarningBrush}"/>
+                        <TextBlock x:Name="txtMvpName" Text="玩家名"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock x:Name="txtMvpKDA" Text="25/12/5 · 1.82 K/D"
+                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="评分" FontSize="11"
+                               Foreground="{StaticResource TextMutedBrush}"/>
+                        <TextBlock x:Name="txtMvpScore" Text="124"
+                               FontSize="28" FontWeight="Bold"
+                               Foreground="{StaticResource WarningBrush}"
+                               FontFamily="{StaticResource FontMono}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 详细统计 -->
+            <Border Grid.Row="3" CornerRadius="{StaticResource RadiusMedium}"
+                Background="{StaticResource BgCardBrush}"
+                BorderBrush="{StaticResource BorderPrimaryBrush}"
+                BorderThickness="1" Padding="0"
+                Margin="0,0,0,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 表头 -->
+                    <!-- 表头 -->
+                    <Border Grid.Row="0" Background="{StaticResource BgElevatedBrush}"
+                        Padding="12,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="45"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="玩家"
+                                   FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock Grid.Column="2" Text="击杀" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="死亡" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource DangerBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="助攻" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="爆头" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="伤害" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="7" Text="MVP" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource WarningBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="8" Text="评分" FontSize="11" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- CT 队数据 -->
+                    <ItemsControl x:Name="ctResultList" Grid.Row="1" Background="Transparent"
+                              BorderThickness="0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="12,6"
+                                    BorderBrush="{StaticResource BorderPrimaryBrush}"
+                                    BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="4" Height="4"
+                                            CornerRadius="2" VerticalAlignment="Center"
+                                            Background="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                               FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Kills}"
+                                               FontSize="13" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Deaths}"
+                                               FontSize="13" Foreground="{StaticResource DangerBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="4" Text="{Binding Assists}"
+                                               FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="5" Text="{Binding HeadshotPercent}"
+                                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="6" Text="{Binding Damage}"
+                                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="7" Text="{Binding MVPs}"
+                                               FontSize="13" Foreground="{StaticResource WarningBrush}"
+                                               HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="8" Text="{Binding Score}"
+                                               FontSize="13" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningBrush}"
+                                               HorizontalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <!-- MMR 变化 + 底部 -->
+            <Border Grid.Row="4" CornerRadius="{StaticResource RadiusMedium}"
+                Background="{StaticResource BgElevatedBrush}"
+                Padding="16" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock x:Name="txtMMRChange" Text="+25 MMR"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="比赛时长: " FontSize="12"
+                               Foreground="{StaticResource TextMutedBrush}"/>
+                        <TextBlock x:Name="txtDuration" Text="32m 15s"
+                               FontSize="12" FontFamily="{StaticResource FontMono}"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text=" · 地图: " FontSize="12"
+                               Foreground="{StaticResource TextMutedBrush}" Margin="16,0,0,0"/>
+                        <TextBlock x:Name="txtResultMap" Text="de_inferno"
+                               FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Content="关闭"
+                        Style="{StaticResource BtnPrimary}"
+                        Width="100" FontSize="13"
+                        Click="Close_Click" Margin="0,0,0,-4"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,77 @@
+<Window x:Class="BeiShuiCS2.ServerConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="连接服务器"
+        Width="660" Height="473"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False" Grid.RowSpan="3"/>
+
+        <!-- 标题 -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16" HorizontalAlignment="Center">
+            <Border Width="48" Height="48" CornerRadius="24"
+                    Background="{StaticResource PrimaryGradientBrush}"
+                    HorizontalAlignment="Center" Margin="0,0,0,12">
+                <TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons"
+                           FontSize="22" Foreground="{StaticResource BgDeepBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock Text="连接服务器" FontSize="20" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="输入后端服务器地址以连接到背水对战平台"
+                       FontSize="12" Foreground="{StaticResource TextMutedBrush}"
+                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- 表单 -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+            <!-- 服务器地址（含端口） -->
+            <TextBlock Text="服务器地址" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+            <Border Background="{StaticResource BgElevatedBrush}"
+                    CornerRadius="{StaticResource RadiusSmall}"
+                    BorderBrush="{StaticResource BorderPrimaryBrush}"
+                    BorderThickness="1" Padding="12,10" Margin="0,0,0,16">
+                <TextBox x:Name="txtServerAddress" Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource TextPrimaryBrush}"
+                         FontSize="14" CaretBrush="{StaticResource PrimaryBrush}"
+                         Text=""/>
+            </Border>
+
+            <!-- 使用 HTTPS -->
+            <CheckBox x:Name="chkUseHttps" Content="使用 HTTPS"
+                      Foreground="{StaticResource TextSecondaryBrush}"
+                      FontSize="13" IsChecked="True" Margin="0,0,0,12"/>
+
+            <!-- 状态提示 -->
+            <Border x:Name="statusPanel" Visibility="Collapsed"
+                    CornerRadius="{StaticResource RadiusSmall}" Padding="12,8">
+                <TextBlock x:Name="txtStatus" Text="" FontSize="12"
+                           TextWrapping="Wrap" HorizontalAlignment="Center"/>
+            </Border>
+        </StackPanel>
+
+        <!-- 按钮 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                    Margin="0,12,0,0">
+            <Button x:Name="btnTest" Content="&#xE9CE; 测试连接"
+                    Style="{StaticResource BtnNeumorph}"
+                    Width="120" Height="51" FontSize="13"
+                    Margin="0,0,12,0" Click="Test_Click"/>
+            <Button x:Name="btnSave" Content="&#xE8FB; 保存"
+                    Style="{StaticResource BtnPrimary}"
+                    Width="120" Height="51" FontSize="13"
+                    Click="Save_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

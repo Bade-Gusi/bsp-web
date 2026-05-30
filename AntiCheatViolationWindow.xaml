@@ -1,0 +1,72 @@
+<Window x:Class="BeiShuiCS2.AntiCheatViolationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="违规警告" 
+        Width="600" Height="485"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Topmost="True" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False"/>
+
+        <TextBlock Grid.Row="0" Text="&#xE7BA;" FontFamily="Segoe Fluent Icons"
+                   FontSize="56" Foreground="{StaticResource DangerBrush}"
+                   HorizontalAlignment="Center" Margin="0,0,0,16">
+            <TextBlock.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             From="0.5" To="1" Duration="0:0:0.8"
+                                             AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </TextBlock.Triggers>
+        </TextBlock>
+
+        <TextBlock Grid.Row="1" Text="反作弊违规检测" FontSize="26" FontWeight="Bold"
+                   Foreground="{StaticResource DangerBrush}"
+                   HorizontalAlignment="Center" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="2" Text="检测到异常行为，请立即处理"
+                   FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                   HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+        <Border Grid.Row="3" Style="{StaticResource CardStyle}"
+                Background="#280A0A" BorderBrush="#F43F5E">
+            <StackPanel>
+                <TextBlock Text="违规类型" FontSize="12"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           Margin="0,0,0,8"/>
+                <TextBlock x:Name="txtViolationType" Text="内存修改检测"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{StaticResource DangerBrush}"/>
+                <TextBlock Text="检测时间" FontSize="12"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           Margin="0,16,0,8"/>
+                <TextBlock x:Name="txtDetectionTime" Text="2026-04-26 12:00:00"
+                           FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"
+                           FontFamily="{StaticResource FontMono}"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Button Content="申诉" Style="{StaticResource BtnGhost}"
+                    Width="120" Height="48" Margin="0,0,12,0"
+                    Click="Appeal_Click"/>
+            <Button Content="退出游戏" Style="{StaticResource BtnDanger}"
+                    Width="140" Height="48" Click="Exit_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

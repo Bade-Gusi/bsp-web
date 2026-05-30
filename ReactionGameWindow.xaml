@@ -1,0 +1,70 @@
+<Window x:Class="BeiShuiCS2.ReactionGameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="反应速度测试" 
+        Width="500" Height="563"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题栏 -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="反应速度测试" FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"/>
+            <Button Grid.Column="1" Content="&#xE8BB;" FontFamily="Segoe Fluent Icons"
+                    Style="{StaticResource WindowControlBtn}"
+                    Click="Close_Click"/>
+        </Grid>
+
+        <!-- 反应区域 -->
+        <Border Grid.Row="1" x:Name="reactionArea"
+                Background="{StaticResource BgElevatedBrush}"
+                CornerRadius="{StaticResource RadiusLarge}"
+                BorderBrush="{StaticResource BorderPrimaryBrush}"
+                BorderThickness="2"
+                Cursor="Hand"
+                MouseDown="ReactionArea_Click">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock x:Name="txtInstruction" Text="点击开始测试"
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center"/>
+                <TextBlock x:Name="txtResult" Text=""
+                           FontSize="48" FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           HorizontalAlignment="Center" Margin="0,16,0,0"
+                           Visibility="Collapsed"/>
+                <TextBlock x:Name="txtBest" Text="最佳: -- ms"
+                           FontSize="14"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           HorizontalAlignment="Center" Margin="0,12,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 历史记录 -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,16,0,0" Padding="16">
+            <StackPanel>
+                <TextBlock Text="最近5次测试" FontSize="14" FontWeight="Bold"
+                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8"/>
+                <ItemsControl x:Name="historyList">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

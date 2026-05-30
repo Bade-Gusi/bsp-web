@@ -1,0 +1,226 @@
+<Window x:Class="BeiShuiCS2.StatsOverviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="数据概览"
+        Width="660" Height="620"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Window.Resources>
+        <Style x:Key="StatGlassCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource BgCardBrush}"/>
+            <Setter Property="BorderBrush" Value="#4ADE8030"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="3" Opacity="0.3" Color="#000000"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <Grid Grid.Row="0" Margin="0,0,0,28">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Border Width="44" Height="44" CornerRadius="14"
+                        Background="{StaticResource PrimaryGradientBrush}"
+                        Effect="{StaticResource ShadowMedium}">
+                    <TextBlock Text="&#xE9D2;" FontFamily="Segoe Fluent Icons"
+                               FontSize="22" Foreground="{StaticResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="数据概览" FontSize="24" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="实时对战统计与个人数据" FontSize="12"
+                               Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </StackPanel>
+            <Button Grid.Column="1" Content="&#xE8BB;" FontFamily="Segoe Fluent Icons"
+                    Style="{StaticResource WindowControlBtn}"
+                    Click="Close_Click"/>
+        </Grid>
+
+        <!-- 数据内容 -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <!-- 顶部统计行 -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Style="{StaticResource StatGlassCard}" Margin="0,0,8,0">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="总场次" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock x:Name="txtTotalMatches" Text="156" FontSize="28" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryBrush}" Margin="0,6,0,0"/>
+                            <TextBlock Text="+12 本月" FontSize="11"
+                                       Foreground="{StaticResource AccentBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource StatGlassCard}" Margin="4,0">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="胜率" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock x:Name="txtWinRate" Text="67.3%" FontSize="28" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryBrush}" Margin="0,6,0,0"/>
+                            <TextBlock Text="104胜 52负" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource StatGlassCard}" Margin="8,0,0,0">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Rating" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock x:Name="txtRating" Text="1,847" FontSize="28" FontWeight="Bold"
+                                       Foreground="{StaticResource WarningBrush}" Margin="0,6,0,0"/>
+                            <TextBlock Text="+23 本周" FontSize="11"
+                                       Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- 详细统计 -->
+                <Border Style="{StaticResource StatGlassCard}" Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Text="对战数据" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Margin="0,0,0,16"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="总击杀" FontSize="13"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="2,847" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontFamily="{StaticResource FontMono}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="总死亡" FontSize="13" Margin="0,10,0,0"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                   Text="2,156" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontFamily="{StaticResource FontMono}" Margin="0,10,0,0"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="K/D 比率" FontSize="13" Margin="0,10,0,0"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   Text="1.32" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   FontFamily="{StaticResource FontMono}" Margin="0,10,0,0"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   Text="爆头率" FontSize="13" Margin="0,10,0,0"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1"
+                                   Text="42.5%" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource AccentBrush}"
+                                   FontFamily="{StaticResource FontMono}" Margin="0,10,0,0"/>
+                    </Grid>
+                </Border>
+
+                <!-- 地图胜率 -->
+                <Border Style="{StaticResource StatGlassCard}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="地图胜率" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Margin="0,0,0,16"/>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="炼狱小镇 (de_inferno)" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="12-4" FontSize="13"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       FontFamily="{StaticResource FontMono}"/>
+                            <TextBlock Grid.Column="2" Text="75%" FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryBrush}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="荒漠迷城 (de_mirage)" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="8-6" FontSize="13"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       FontFamily="{StaticResource FontMono}"/>
+                            <TextBlock Grid.Column="2" Text="57%" FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource WarningBrush}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="死亡游乐园 (de_overpass)" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="6-3" FontSize="13"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       FontFamily="{StaticResource FontMono}"/>
+                            <TextBlock Grid.Column="2" Text="67%" FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryBrush}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 最近表现 -->
+                <Border Style="{StaticResource StatGlassCard}">
+                    <StackPanel>
+                        <TextBlock Text="最近表现" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <TextBlock Text="近20场胜率: 65% · 场均击杀: 18.4 · 场均助攻: 5.2"
+                                   FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

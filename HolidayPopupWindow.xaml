@@ -1,0 +1,130 @@
+<Window x:Class="BeiShuiCS2.HolidayPopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="节日祝福"
+        Width="580" Height="720"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False">
+
+    <Grid>
+        <!-- 背景遮罩 -->
+        <Rectangle Fill="#000000" Opacity="0.35"/>
+
+        <!-- 主卡片 -->
+        <Grid x:Name="cardContainer" Width="520" Height="680"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              RenderTransformOrigin="0.5,0.5" Opacity="0">
+            <Grid.RenderTransform>
+                <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+            </Grid.RenderTransform>
+
+            <Border x:Name="cardBorder" CornerRadius="24" ClipToBounds="True">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop x:Name="gradStop1" Offset="0"/>
+                        <GradientStop x:Name="gradStop2" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Canvas x:Name="particleCanvas" IsHitTestVisible="False"
+                            Grid.RowSpan="3" Margin="0"/>
+
+                    <!-- 顶部装饰 -->
+                    <Grid Grid.Row="0" Margin="0,20,0,0" Panel.ZIndex="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <Border Width="80" Height="80" CornerRadius="40"
+                                Background="#22FFFFFF"
+                                x:Name="emojiCircle"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0" ScaleY="0"/>
+                            </Border.RenderTransform>
+                            <TextBlock x:Name="txtEmoji" Text="🎉"
+                                       FontSize="40"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="txtTitle" Text="节日快乐"
+                                   FontSize="30" FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,16,0,0"
+                                   Opacity="0"/>
+                        </StackPanel>
+                        <!-- X 关闭按钮 -->
+                        <Border Grid.Column="1" Width="32" Height="32" CornerRadius="16"
+                                Background="#33FFFFFF"
+                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Margin="0,0,12,0">
+                            <Button Content="✕" FontSize="16"
+                                    Foreground="#CCFFFFFF"
+                                    Background="Transparent" BorderThickness="0"
+                                    Click="Close_Click"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- 祝福语 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                                  Margin="36,20,36,0" Panel.ZIndex="10">
+                        <TextBlock x:Name="txtMessage" Text=""
+                                   FontSize="16"
+                                   Foreground="#EEFFFFFF"
+                                   TextAlignment="Center"
+                                   LineHeight="30"
+                                   TextWrapping="Wrap"
+                                   Opacity="0"/>
+                    </ScrollViewer>
+
+                    <!-- 底部 -->
+                    <StackPanel Grid.Row="2" HorizontalAlignment="Center"
+                                Margin="0,0,0,28" Panel.ZIndex="10">
+                        <TextBlock Text="— 背水对战平台 —"
+                                   FontSize="12"
+                                   Foreground="#99FFFFFF"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,16"
+                                   Opacity="0"/>
+                        <StackPanel x:Name="bottomButtons" Orientation="Horizontal" HorizontalAlignment="Center" Opacity="0">
+                            <Button Content="下次启动不显示"
+                                    Style="{StaticResource BtnGhost}"
+                                    Foreground="#CCFFFFFF"
+                                    Height="38" FontSize="12"
+                                    Margin="0,0,8,0"
+                                    Background="#33FFFFFF"
+                                    Click="DismissToday_Click"/>
+                            <Button Content="永久不显示"
+                                    Style="{StaticResource BtnGhost}"
+                                    Foreground="#CCFFFFFF"
+                                    Height="38" FontSize="12"
+                                    Margin="0,0,8,0"
+                                    Background="#22FFFFFF"
+                                    Click="DismissPermanent_Click"/>
+                            <Button Content="收下祝福"
+                                    Style="{StaticResource BtnNeumorph}"
+                                    Height="38" FontSize="12"
+                                    Background="#44FFFFFF"
+                                    Foreground="White"
+                                    Click="Close_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

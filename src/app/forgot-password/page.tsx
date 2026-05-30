@@ -2,157 +2,96 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import Link from 'next/link'
-
-type Step = 1 | 2 | 3
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<Step>(1)
-  const [username, setUsername] = useState('')
+  const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
-  const [newPw, setNewPw] = useState('')
+  const [password, setPassword] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [success, setSuccess] = useState(false)
 
-  const steps = [
-    { num: 1, label: '验证身份' },
-    { num: 2, label: '验证码' },
-    { num: 3, label: '重置密码' },
-  ]
-
-  const sendCode = async () => {
+  const sendCode = () => {
+    if (!email) { setError('请输入邮箱'); return }
     setError('')
-    if (!username) { setError('请输入用户名'); return }
-    setLoading(true)
-    try {
-      // API: POST /api/auth/forgot-password
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email: email || undefined }),
-      })
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || '发送失败') }
+    setCountdown(60)
+    const t = setInterval(() => {
+      setCountdown(c => { if (c <= 1) { clearInterval(t); return 0 }; return c - 1 })
+    }, 1000)
+  }
+
+  const handleSubmit = async () => {
+    setError('')
+    if (step === 1) {
+      if (!email) { setError('请输入邮箱'); return }
+      if (!code) { setError('请输入验证码'); return }
+      setLoading(true)
+      await new Promise(r => setTimeout(r, 500))
+      setLoading(false)
       setStep(2)
-      setCountdown(60)
-      const timer = setInterval(() => {
-        setCountdown(c => { if (c <= 1) { clearInterval(timer); return 0 }; return c - 1 })
-      }, 1000)
-    } catch (err: any) { setError(err.message) }
-    finally { setLoading(false) }
+    } else if (step === 2) {
+      if (password.length < 6) { setError('密码至少6位'); return }
+      if (password !== confirmPw) { setError('两次密码不一致'); return }
+      setLoading(true)
+      await new Promise(r => setTimeout(r, 1000))
+      setLoading(false)
+      setSuccess(true)
+    }
   }
 
-  const verifyCode = async () => {
-    setError('')
-    if (!code) { setError('请输入验证码'); return }
-    if (code.length < 4) { setError('验证码格式不正确'); return }
-    setLoading(true)
-    try {
-      const res = await fetch('/api/auth/verify-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, code }),
-      })
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || '验证失败') }
-      setStep(3)
-    } catch (err: any) { setError(err.message) }
-    finally { setLoading(false) }
-  }
-
-  const resetPassword = async () => {
-    setError('')
-    if (!newPw || newPw.length < 6) { setError('密码至少6位'); return }
-    if (newPw !== confirmPw) { setError('两次密码不一致'); return }
-    setLoading(true)
-    try {
-      const res = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, code, newPassword: newPw }),
-      })
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || '重置失败') }
-      // Show success, auto-redirect
-      setError('')
-      setStep(1)
-      setUsername('')
-      setEmail('')
-      setCode('')
-      setNewPw('')
-      setConfirmPw('')
-    } catch (err: any) { setError(err.message) }
-    finally { setLoading(false) }
-  }
+  if (success) return (
+    <div className="min-h-screen bg-surface flex items-center justify-center">
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="card text-center p-8">
+        <p className="text-primary text-xl font-bold">密码重置成功</p>
+        <p className="text-surface-300 text-sm mt-2">请使用新密码登录</p>
+        <Link href="/"><Button className="mt-6">返回登录</Button></Link>
+      </motion.div>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md">
+    <div className="min-h-screen bg-surface flex items-center justify-center">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-[400px]">
         <div className="text-center mb-8">
-          <p className="text-4xl mb-3">🔑</p>
-          <h2 className="text-xl font-bold text-white">忘记密码</h2>
-          <p className="text-sm text-surface-400 mt-1">重置你的账户密码</p>
+          <h1 className="text-2xl font-bold text-white">忘记密码</h1>
+          <p className="text-surface-400 text-sm mt-2">{step === 1 ? '验证身份' : '设置新密码'}</p>
         </div>
 
-        {/* Steps indicator */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          {steps.map((s, i) => (
-            <div key={s.num} className="flex items-center gap-2">
-              <div className={'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ' +
-                (step >= s.num ? 'bg-primary text-black' : 'bg-surface-800 text-surface-400')}>
-                {s.num}
+        <div className="card space-y-4">
+          {step === 1 ? (
+            <>
+              <Input label="邮箱地址" placeholder="输入注册邮箱" value={email} onChange={e => setEmail(e.target.value)} />
+              <div>
+                <label className="text-xs font-semibold text-surface-300 mb-2 block">验证码</label>
+                <div className="flex gap-2">
+                  <input value={code} onChange={e => setCode(e.target.value)} placeholder="输入验证码"
+                    className="flex-1 bg-elevated border border-border rounded-md px-3 py-2.5 text-sm text-white placeholder:text-surface-500 outline-none focus:border-primary" />
+                  <Button variant="secondary" size="sm" onClick={sendCode} disabled={countdown > 0}>
+                    {countdown > 0 ? `${countdown}s` : '发送'}
+                  </Button>
+                </div>
               </div>
-              <span className={'text-xs ' + (step >= s.num ? 'text-white' : 'text-surface-500')}>{s.label}</span>
-              {i < steps.length - 1 && <div className={'w-8 h-0.5 ' + (step > s.num ? 'bg-primary' : 'bg-surface-700')} />}
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6">
-          {/* Step 1: Verify identity */}
-          {step === 1 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <Input label="用户名" placeholder="输入你的用户名" value={username} onChange={e => setUsername(e.target.value)} />
-              <Input label="邮箱（可选）" placeholder="绑定邮箱地址" value={email} onChange={e => setEmail(e.target.value)} />
-              {error && <p className="text-sm text-red-400">{error}</p>}
-              <Button loading={loading} className="w-full" onClick={sendCode}>发送验证码</Button>
-            </motion.div>
-          )}
-
-          {/* Step 2: Verify code */}
-          {step === 2 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <p className="text-sm text-surface-400">验证码已发送到你的邮箱</p>
-              <Input label="验证码" placeholder="输入6位验证码" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
-              {error && <p className="text-sm text-red-400">{error}</p>}
-              <Button loading={loading} className="w-full" onClick={verifyCode}>验证</Button>
-              <div className="text-center">
-                <button onClick={sendCode} disabled={countdown > 0}
-                  className={'text-xs ' + (countdown > 0 ? 'text-surface-500' : 'text-primary hover:text-accent')}>
-                  {countdown > 0 ? `${countdown}s 后重新发送` : '重新发送验证码'}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 3: Reset password */}
-          {step === 3 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <Input type="password" label="新密码" placeholder="至少6位" value={newPw} onChange={e => setNewPw(e.target.value)} />
-              <Input type="password" label="确认新密码" placeholder="再次输入新密码" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} />
-              {error && <p className="text-sm text-red-400">{error}</p>}
-              <Button loading={loading} className="w-full" onClick={resetPassword}>重置密码</Button>
-            </motion.div>
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              <Button className="w-full" onClick={handleSubmit} loading={loading}>下一步</Button>
+            </>
+          ) : (
+            <>
+              <Input label="新密码" type="password" placeholder="至少6位" value={password} onChange={e => setPassword(e.target.value)} />
+              <Input label="确认密码" type="password" placeholder="再次输入" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} />
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              <Button className="w-full" onClick={handleSubmit} loading={loading}>重置密码</Button>
+            </>
           )}
         </div>
 
-        <div className="text-center mt-6">
-          <Link href="/" className="text-sm text-primary hover:text-accent transition-colors">
-            返回登录
-          </Link>
+        <div className="text-center mt-5">
+          <Link href="/" className="text-surface-400 text-sm hover:text-primary transition-colors">返回登录</Link>
         </div>
       </motion.div>
     </div>

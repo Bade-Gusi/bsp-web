@@ -1,0 +1,76 @@
+<Window x:Class="BeiShuiCS2.AntiCheatAlertWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="反作弊警告"
+        Width="520" Height="667"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Topmost="True"
+        ShowInTaskbar="True"
+        Loaded="Window_Loaded" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Grid Margin="32,32,32,19">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False"/>
+
+        <!-- 警告图标 -->
+        <Border Grid.Row="0" Width="64" Height="64" CornerRadius="32"
+                Background="{StaticResource DangerBrush}" HorizontalAlignment="Center" Margin="0,0,0,20">
+            <TextBlock Text="&#x26A0;" FontSize="32" Foreground="{StaticResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.498,0.302" Margin="0,5,0,0"/>
+        </Border>
+
+        <TextBlock Grid.Row="1" Text="反作弊检测异常" FontSize="22" FontWeight="Bold"
+                   Foreground="{StaticResource DangerBrush}"
+                   HorizontalAlignment="Center" Margin="0,0,0,16"/>
+
+        <!-- 详细信息 -->
+        <Border Grid.Row="2" Background="{StaticResource BgElevatedBrush}"
+                CornerRadius="{StaticResource RadiusMedium}" Padding="20" Margin="0,0,0,63">
+            <StackPanel>
+                <TextBlock x:Name="txtViolation" Text="违规类型：未知"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="{StaticResource DangerBrush}"
+                           Margin="0,0,0,12"/>
+                <TextBlock x:Name="txtDetail" TextWrapping="Wrap" FontSize="13"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           LineHeight="22">
+                    反作弊系统检测到可疑活动，为保护您的账号安全和游戏公平性，已自动关闭CS2。
+                </TextBlock>
+                <Separator Background="{StaticResource BorderPrimaryBrush}" Margin="0,16"/>
+                <TextBlock FontSize="12" Foreground="{StaticResource WarningBrush}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" Margin="0,0,0,6">
+                    如果您认为是误报，请联系背水对战平台客服并提供以下信息：
+                </TextBlock>
+                <Border Background="{StaticResource BgCardBrush}"
+                        CornerRadius="6" Padding="12,8" Margin="0,0,0,4">
+                    <StackPanel>
+                        <TextBlock x:Name="txtErrorCode" FontSize="12" FontFamily="{StaticResource FontMono}"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="请将此信息截图发送给客服" FontSize="10"
+                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- 按钮 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="违反详情" Style="{StaticResource BtnGhost}"
+                    Width="130" Height="42" FontSize="13"
+                    Margin="0,0,12,0"
+                    Click="ViolationDetail_Click"/>
+            <Button Content="我知道了" Style="{StaticResource BtnPrimary}"
+                    Width="160" Height="42" FontSize="14"
+                    Click="Acknowledge_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

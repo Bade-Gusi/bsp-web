@@ -1,0 +1,27 @@
+-- ========== v5.0 节日系统 + 生日 ==========
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS birthday VARCHAR(5) DEFAULT NULL COMMENT '生日 MM-dd';
+
+CREATE TABLE IF NOT EXISTS holidays (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(32) NOT NULL,
+    date VARCHAR(5) NOT NULL COMMENT 'MM-dd',
+    message TEXT NOT NULL,
+    color1 VARCHAR(16) DEFAULT '#4ADE80',
+    color2 VARCHAR(16) DEFAULT '#2DD4BF',
+    emoji VARCHAR(8) DEFAULT '🎉',
+    image_url VARCHAR(256) DEFAULT '',
+    type TINYINT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS welfare_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(64) NOT NULL,
+    summary TEXT NOT NULL,
+    link VARCHAR(512) DEFAULT '',
+    color1 VARCHAR(16) DEFAULT '#4ADE80',
+    color2 VARCHAR(16) DEFAULT '#2DD4BF',
+    icon VARCHAR(8) DEFAULT '❤️',
+    is_active BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project outputDir="$(MSBuildProjectDirectory)\Confused" baseDir="$(MSBuildProjectDirectory)\$(OutputPath)" xmlns="http://confuser.codeplex.com">
+  <module path="BeiShuiCS2.exe">
+    <!-- 基础保护 -->
+    <protection id="rename">
+      <argument name="renXaml" value="true" />
+    </protection>
+    <protection id="control flow" />
+    <protection id="constants" />
+    <protection id="anti debug" />
+    <protection id="anti tamper" />
+
+    <!-- 排除 WPF 主类（防止 XAML 引用失效） -->
+    <rule pattern="type:BeiShuiCS2.App" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.MainWindow" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.SettingsWindow" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.ServerManagerWindow" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.SteamUserSelectWindow" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+
+    <!-- 排除需要反射或动态调用的类 -->
+    <rule pattern="type:BeiShuiCS2.AntiCheatToken" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.ShortcutHelper" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+    <rule pattern="type:BeiShuiCS2.AntiCheat" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+
+    <!-- 排除所有窗口类（如果有其他窗口，继续添加） -->
+    <rule pattern="type:BeiShuiCS2.*Window" inherit="false">
+      <protection id="rename" action="remove" />
+    </rule>
+  </module>
+</project>

@@ -1,0 +1,140 @@
+<Application x:Class="BeiShuiCS2.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ============================================================ -->
+            <!-- 全局窗口样式 - 命名样式，各窗口通过 DynamicResource 引用     -->
+            <!-- 安全毛玻璃效果 + 圆角边框 + 入场动画 + 屏幕自适应           -->
+            <!-- 注意：避免在 AllowsTransparency=True 时使用 BlurEffect，      -->
+            <!-- 否则导致 WPF 渲染管线崩溃（DWM 分层窗口限制）                -->
+            <!-- ============================================================ -->
+            <Style x:Key="AuroraWindow" TargetType="Window">
+                <!-- 屏幕自适应 + 入场动画 + DWM Acrylic 毛玻璃 -->
+                <EventSetter Event="Loaded" Handler="OnAuroraWindowLoaded"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="FontFamily" Value="{StaticResource FontPrimary}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="WindowStyle" Value="None"/>
+                <Setter Property="AllowsTransparency" Value="True"/>
+                <Setter Property="ResizeMode" Value="CanResize"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <!-- 注意：不在 Style 中设置 RenderTransform，避免冻结对象 -->
+                <!-- 入场缩放动画由 OnAuroraWindowLoaded 创建新的可变 ScaleTransform -->
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Window">
+                            <Grid SnapsToDevicePixels="True" UseLayoutRounding="True"
+                                  Background="{StaticResource BgDeepBrush}">
+                                <!-- 安全玻璃背景层（无 BlurEffect，改用 DWM Acrylic） -->
+                                <Border x:Name="PART_GlassBg"
+                                        Opacity="0.88"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        BorderBrush="{StaticResource BorderPrimaryBrush}"
+                                        BorderThickness="1"
+                                        Background="{StaticResource BgGradientBrush}"
+                                        SnapsToDevicePixels="True"
+                                        UseLayoutRounding="True"/>
+                                <!-- 内容层 -->
+                                <AdornerDecorator>
+                                    <ContentPresenter SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                                </AdornerDecorator>
+                                <!-- 顶部极光高光线（呼吸动画） -->
+                                <Border x:Name="PART_AuroraLine" Height="1" VerticalAlignment="Top"
+                                        Background="{StaticResource PrimaryGradientBrush}"
+                                        Opacity="0.25"
+                                        CornerRadius="{StaticResource RadiusLarge}"/>
+                                <!-- 内发光边框 -->
+                                <Border BorderBrush="{StaticResource PrimaryBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        Opacity="0.05"
+                                        IsHitTestVisible="False"
+                                        SnapsToDevicePixels="True"/>
+                                <!-- 浮动粒子层（由 OnAuroraWindowLoaded 创建粒子） -->
+                                <Canvas x:Name="PART_ParticleCanvas"
+                                        IsHitTestVisible="False"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!-- MainWindow 专用窗口样式                                      -->
+            <!-- 无 AllowsTransparency（支持 WebView2 动画背景）              -->
+            <!-- 使用 WindowChrome 实现自定义标题栏外观                      -->
+            <!-- ============================================================ -->
+            <Style x:Key="MainAuroraWindow" TargetType="Window">
+                <EventSetter Event="Loaded" Handler="OnAuroraWindowLoaded"/>
+                <Setter Property="Background" Value="{StaticResource BgDeepBrush}"/>
+                <Setter Property="FontFamily" Value="{StaticResource FontPrimary}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="WindowStyle" Value="None"/>
+                <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+                <!-- WindowChrome: 彻底移除 DWM 非客户区 / 白色标题栏，保留调整大小能力 -->
+                <Setter Property="WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <WindowChrome CaptionHeight="0"
+                                      ResizeBorderThickness="6"
+                                      GlassFrameThickness="0"
+                                      CornerRadius="0"
+                                      UseAeroCaptionButtons="False"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Window">
+                            <Grid SnapsToDevicePixels="True" UseLayoutRounding="True"
+                                  Background="{StaticResource BgDeepBrush}">
+                                <!-- 背景层，WebView2 将插入于此 -->
+                                <Border x:Name="PART_BackgroundLayer"
+                                        Background="{StaticResource BgDeepBrush}" Opacity="1"
+                                        SnapsToDevicePixels="True"/>
+                                <!-- 圆角内容遮罩 -->
+                                <Border CornerRadius="{StaticResource RadiusLarge}"
+                                        Background="Transparent"
+                                        SnapsToDevicePixels="True"
+                                        UseLayoutRounding="True"
+                                        ClipToBounds="True">
+                                    <Grid>
+                                        <Border CornerRadius="{StaticResource RadiusLarge}"
+                                                Background="Transparent"
+                                                SnapsToDevicePixels="True">
+                                            <AdornerDecorator>
+                                                <ContentPresenter SnapsToDevicePixels="True"
+                                                                  UseLayoutRounding="True"/>
+                                            </AdornerDecorator>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <!-- 顶部极光高光线 -->
+                                <Border Height="1" VerticalAlignment="Top"
+                                        Background="{StaticResource PrimaryGradientBrush}"
+                                        Opacity="0.2"
+                                        CornerRadius="{StaticResource RadiusLarge}"/>
+                                <!-- 浮动粒子层 -->
+                                <Canvas x:Name="PART_ParticleCanvas"
+                                        IsHitTestVisible="False"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

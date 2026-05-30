@@ -1,0 +1,109 @@
+<Window x:Class="BeiShuiCS2.ChatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="综合聊天"
+        Width="558" Height="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Style="{DynamicResource AuroraWindow}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        FontFamily="{StaticResource FontPrimary}"
+        Background="{StaticResource BgDeepBrush}"
+        Effect="{StaticResource ShadowLarge}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 粒子画布 -->
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False"/>
+
+        <!-- 标题栏 -->
+        <Border Grid.Row="0" Height="64" Margin="24,0" BorderBrush="{StaticResource BorderPrimaryBrush}" BorderThickness="0,0,0,1" Opacity="0.4" RenderTransformOrigin="0.5,0.5"/>
+
+        <Grid Grid.Row="0" Height="64" Margin="24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <!-- 聊天图标 -->
+            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="10"
+                    Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0"
+                    RenderTransformOrigin="0.5,0.5">
+                <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons"
+                           Foreground="{StaticResource BgDeepBrush}"
+                           FontSize="16"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <!-- 标题文字 -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Text="综合聊天" FontSize="17" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                <TextBlock Text="队伍频道 · 实时" FontSize="12"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+            <!-- 关闭按钮 -->
+            <Button Grid.Column="2" Content="&#xE8BB;" FontFamily="Segoe Fluent Icons"
+                    Style="{StaticResource WindowControlBtn}"
+                    Click="Close_Click"
+                    RenderTransformOrigin="0.5,0.5"/>
+        </Grid>
+
+        <!-- 消息区域 -->
+        <Border Grid.Row="1"
+                Background="{StaticResource BgCardBrush}"
+                BorderBrush="{StaticResource BorderPrimaryBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource RadiusMedium}"
+                Margin="24,16,24,12"
+                Effect="{StaticResource ShadowMedium}"
+                RenderTransformOrigin="0.5,0.5">
+            <ScrollViewer x:Name="msgScroll" VerticalScrollBarVisibility="Auto"
+                          Padding="4" RenderTransformOrigin="0.5,0.5">
+                <StackPanel x:Name="msgPanel" Margin="12,8">
+                    <!-- 消息气泡由 code-behind 动态生成 -->
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- 输入区域 -->
+        <Grid Grid.Row="2" Margin="24,0,24,24" RenderTransformOrigin="0.5,0.5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="{StaticResource BgElevatedBrush}"
+                    CornerRadius="{StaticResource RadiusMedium}"
+                    BorderBrush="{StaticResource BorderPrimaryBrush}"
+                    BorderThickness="1"
+                    Margin="0,0,79,0"
+                    RenderTransformOrigin="0.5,0.5">
+                <TextBox x:Name="txtMessage"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="14,10"
+                         Foreground="{StaticResource TextPrimaryBrush}"
+                         FontSize="14"
+                         CaretBrush="{StaticResource PrimaryBrush}"
+                         KeyDown="TxtMessage_KeyDown"
+                         RenderTransformOrigin="0.5,0.5" Margin="0,0,54,0"/>
+            </Border>
+
+            <Button
+                    Content="&#xE724;"
+                    FontFamily="Segoe Fluent Icons"
+                    Style="{StaticResource BtnPrimary}"
+                    Height="44"
+                    FontSize="20"
+                    Click="Send_Click"
+                    RenderTransformOrigin="0.5,0.5" Margin="436,0,0,0"/>
+        </Grid>
+    </Grid>
+</Window>

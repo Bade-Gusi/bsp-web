@@ -1,0 +1,9 @@
+C:\Users\巴德古斯\Desktop\win-x86\BeiShuiCS2.pdb
+C:\Users\巴德古斯\Desktop\win-x86\Resources\AnimationBackground.html
+C:\Users\巴德古斯\Desktop\win-x86\Resources\Legal\agreement.txt
+C:\Users\巴德古斯\Desktop\win-x86\Resources\Legal\declaration.txt
+C:\Users\巴德古斯\Desktop\win-x86\Resources\Legal\privacy.txt
+C:\Users\巴德古斯\Desktop\win-x86\Microsoft.Web.WebView2.Core.xml
+C:\Users\巴德古斯\Desktop\win-x86\Microsoft.Web.WebView2.WinForms.xml
+C:\Users\巴德古斯\Desktop\win-x86\Microsoft.Web.WebView2.Wpf.xml
+C:\Users\巴德古斯\Desktop\win-x86\BeiShuiCS2.exe

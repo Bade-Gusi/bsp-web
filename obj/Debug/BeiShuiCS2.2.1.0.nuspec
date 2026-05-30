@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>BeiShuiCS2</id>
+    <version>2.1.0</version>
+    <authors>BadeGusi</authors>
+    <description>Package Description</description>
+    <copyright>版权归属背水工作室</copyright>
+    <repository type="git" commit="e5fc55ea3aad9a34d8a6eb4987d16f85aaeb5dd1" />
+    <dependencies>
+      <group targetFramework="net9.0-windows7.0">
+        <dependency id="LiteNetLib" version="1.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.SignalR.Client" version="9.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Web.WebView2" version="1.0.3912.50" exclude="Build,Analyzers" />
+        <dependency id="NAudio" version="2.2.1" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="9.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.Management" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="System.Net.Http.Json" version="9.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net9.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WindowsForms" />
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WPF" />
+      </group>
+    </frameworkReferences>
+    <contentFiles>
+      <files include="any/net9.0-windows7.0/qle98-zioh6-001.ico" buildAction="Content" />
+      <files include="any/net9.0-windows7.0/Resources/AnimationBackground.html" buildAction="Content" />
+      <files include="any/net9.0-windows7.0/Resources/Legal/agreement.txt" buildAction="Content" />
+      <files include="any/net9.0-windows7.0/Resources/Legal/declaration.txt" buildAction="Content" />
+      <files include="any/net9.0-windows7.0/Resources/Legal/privacy.txt" buildAction="Content" />
+    </contentFiles>
+  </metadata>
+  <files>
+    <file src="D:\学习\ddddddddddfxxg\bsp\bin\Debug\net9.0-windows\win-x64\BeiShuiCS2.runtimeconfig.json" target="lib\net9.0-windows7.0\BeiShuiCS2.runtimeconfig.json" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\bin\Debug\net9.0-windows\win-x64\BeiShuiCS2.dll" target="lib\net9.0-windows7.0\BeiShuiCS2.dll" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\qle98-zioh6-001.ico" target="content\qle98-zioh6-001.ico" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\qle98-zioh6-001.ico" target="contentFiles\any\net9.0-windows7.0\qle98-zioh6-001.ico" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\AnimationBackground.html" target="content\Resources\AnimationBackground.html" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\AnimationBackground.html" target="contentFiles\any\net9.0-windows7.0\Resources\AnimationBackground.html" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\agreement.txt" target="content\Resources\Legal\agreement.txt" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\agreement.txt" target="contentFiles\any\net9.0-windows7.0\Resources\Legal\agreement.txt" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\declaration.txt" target="content\Resources\Legal\declaration.txt" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\declaration.txt" target="contentFiles\any\net9.0-windows7.0\Resources\Legal\declaration.txt" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\privacy.txt" target="content\Resources\Legal\privacy.txt" />
+    <file src="D:\学习\ddddddddddfxxg\bsp\Resources\Legal\privacy.txt" target="contentFiles\any\net9.0-windows7.0\Resources\Legal\privacy.txt" />
+  </files>
+</package>

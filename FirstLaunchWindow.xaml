@@ -1,0 +1,252 @@
+<Window x:Class="BeiShuiCS2.FirstLaunchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:e="clr-namespace:BeiShuiCS2"
+        Title="欢迎使用 背水对战平台"
+        Width="800" Height="820"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Window.Resources>
+        <!-- 浮动极光光晕 -->
+        <Storyboard x:Key="ParticleDrift" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)"
+                             From="0" To="-100" Duration="0:0:12"
+                             EasingFunction="{StaticResource EaseOutCubic}"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid>
+        <!-- 背景径向渐变 -->
+        <Grid.Background>
+            <RadialGradientBrush Center="0.5,0.3" RadiusX="0.9" RadiusY="0.9">
+                <GradientStop Color="#0D1A0F" Offset="0"/>
+                <GradientStop Color="{StaticResource BgDeepColor}" Offset="1"/>
+            </RadialGradientBrush>
+        </Grid.Background>
+
+        <!-- 粒子层 -->
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False" Height="820" VerticalAlignment="Top"/>
+
+        <!-- 主内容 -->
+        <Grid Margin="40,32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo + 标题 （带缩放入口动画） -->
+            <Border Grid.Row="0" x:Name="headerSection">
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <!-- 图标容器 -->
+                    <Border Width="80" Height="80" CornerRadius="22"
+                            Background="{StaticResource PrimaryGradientBrush}"
+                            HorizontalAlignment="Center" Margin="0,0,0,18"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="36" ShadowDepth="0" Opacity="0.5" Color="#4ADE80"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Image Source="pack://application:,,,/default_avatar.png"
+                               Width="80" Height="80" Stretch="UniformToFill"/>
+                    </Border>
+                    <TextBlock x:Name="txtTitle" Text="背水对战平台 · 内部预览版" FontSize="24" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                    <TextBlock Text="BEISHUI AURORA · INTERNAL PREVIEW" FontSize="11"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               HorizontalAlignment="Center"
+                               FontFamily="{StaticResource FontMono}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 说明内容（交错入场） -->
+            <ScrollViewer Grid.Row="1" MaxHeight="440" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="contentPanel" Margin="0,0,0,16">
+
+                    <!-- 预览版说明 -->
+                    <Border x:Name="card1" Style="{StaticResource GlassCardPremium}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="28" Height="28" CornerRadius="8"
+                                        Background="#FBBF2420" Margin="0,0,12,0">
+                                    <TextBlock Text="&#x26A0;" FontSize="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="预览版须知" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource WarningBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       LineHeight="24">
+                                <Run Text="您正在使用的是"/>
+                                <Run Text="内部预览分支" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
+                                <Run Text="的预发布版本，程序内容及功能尚未完整完善。您大概率是被其他人"/>
+                                <Run Text="特别邀请" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                                <Run Text="参与测试的。"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 连接方式一：服务器地址 -->
+                    <Border x:Name="card2" Style="{StaticResource GlassCardPremium}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="28" Height="28" CornerRadius="14"
+                                        Background="{StaticResource PrimaryBrush}"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="1" FontWeight="Bold" FontSize="14"
+                                               Foreground="{StaticResource BgDeepBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="通过服务器地址连接" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       LineHeight="22" Margin="40,0,0,0">
+                                <Run Text="其他人大概率会给您发送一条类似网站链接或者一堆数字的服务器地址。"/>
+                            </TextBlock>
+                            <Border Background="{StaticResource BgCardBrush}"
+                                    CornerRadius="{StaticResource RadiusSmall}"
+                                    Padding="16,12" Margin="40,14,0,0">
+                                <StackPanel>
+                                    <TextBlock FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
+                                        <Run Text="操作步骤："/>
+                                    </TextBlock>
+                                    <BulletDecorator Margin="0,0,0,6">
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="进入软件，选择您当前 Steam 所登录的账号" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                    <BulletDecorator Margin="0,0,0,6">
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="点击右上角「服务器管理」按钮" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                    <BulletDecorator Margin="0,0,0,6">
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="选择「添加服务器」，将地址粘贴上去" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                    <BulletDecorator>
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="选中服务器并点击「连接」，即可正常游玩" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 连接方式二：房间号 -->
+                    <Border x:Name="card3" Style="{StaticResource GlassCardPremium}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="28" Height="28" CornerRadius="14"
+                                        Background="{StaticResource AccentTealBrush}"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="2" FontWeight="Bold" FontSize="14"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="通过房间号连接" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       LineHeight="22" Margin="40,0,0,0">
+                                <Run Text="别人可能会告诉您一个"/>
+                                <Run Text="房间号" FontWeight="Bold" Foreground="{StaticResource AccentTealBrush}"/>
+                                <Run Text="，您可以通过房间号快速加入。"/>
+                            </TextBlock>
+                            <Border Background="{StaticResource BgCardBrush}"
+                                    CornerRadius="{StaticResource RadiusSmall}"
+                                    Padding="16,12" Margin="40,14,0,0">
+                                <StackPanel>
+                                    <TextBlock FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
+                                        <Run Text="操作步骤："/>
+                                    </TextBlock>
+                                    <BulletDecorator Margin="0,0,0,6">
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource AccentTealBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="进入软件，选择您当前 Steam 所登录的账号" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                    <BulletDecorator Margin="0,0,0,6">
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource AccentTealBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="点击中间位置的「浏览房间」" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                    <BulletDecorator>
+                                        <BulletDecorator.Bullet>
+                                            <Ellipse Width="4" Height="4" Fill="{StaticResource AccentTealBrush}" Margin="0,0,10,0"/>
+                                        </BulletDecorator.Bullet>
+                                        <TextBlock Text="在搜索框输入房间号，找到房间后点击进入即可" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </BulletDecorator>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 自启动提示 -->
+                    <Border x:Name="card4" Style="{StaticResource GlassCardPremium}" Background="#11241860" Padding="16">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons"
+                                       FontSize="20" Foreground="{StaticResource InfoBrush}"
+                                       Margin="0,0,14,0" VerticalAlignment="Top"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       LineHeight="20">
+                                <Run Text="提示：平台为保证反作弊运行正常，默认开启开机自启动。如需要，请在进入后的「设置」中自行关闭。"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 底部操作区 -->
+            <StackPanel Grid.Row="3" x:Name="footerSection" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button x:Name="btnStart" Content="了解了，开始使用"
+                        Style="{StaticResource BtnGradient}"
+                        Width="260" Height="52" FontSize="16"
+                        Click="Start_Click"/>
+                <CheckBox x:Name="chkDontShow" Content="下次不再显示此页面"
+                          Foreground="{StaticResource TextMutedBrush}"
+                          Margin="0,16,0,0" HorizontalAlignment="Center"
+                          FontSize="13"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 装饰光晕 -->
+        <Ellipse Width="300" Height="300"
+                 HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                 Margin="-80,-80,0,0"
+                 Fill="{StaticResource PrimaryBrush}" Opacity="0.03"
+                 RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False">
+            <Ellipse.RenderTransform>
+                <RotateTransform Angle="0"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Ellipse Width="200" Height="200"
+                 HorizontalAlignment="Right" VerticalAlignment="Top"
+                 Margin="0,60,40,0"
+                 Fill="{StaticResource AccentTealBrush}" Opacity="0.03"
+                 IsHitTestVisible="False"/>
+    </Grid>
+</Window>

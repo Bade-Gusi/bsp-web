@@ -1,0 +1,268 @@
+<Window x:Class="BeiShuiCS2.CreateRoomWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="创建房间"
+        Width="900" Height="1018"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Style="{DynamicResource AuroraWindow}" WindowStyle="None" AllowsTransparency="True">
+
+    <Window.Resources>
+        <Style x:Key="MapCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardGradientBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                                 To="1.05" Duration="0:0:0.2"
+                                                 EasingFunction="{StaticResource EaseOutCubic}"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                                 To="1.05" Duration="0:0:0.2"
+                                                 EasingFunction="{StaticResource EaseOutCubic}"/>
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color"
+                                                To="{StaticResource PrimaryColor}"
+                                                Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                                 To="1" Duration="0:0:0.2"
+                                                 EasingFunction="{StaticResource EaseOutCubic}"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                                 To="1" Duration="0:0:0.2"
+                                                 EasingFunction="{StaticResource EaseOutCubic}"/>
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color"
+                                                To="#2D4A35" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ModeBtn" TargetType="Button">
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Canvas x:Name="particleCanvas" IsHitTestVisible="False"/>
+        <Border Background="{StaticResource BgDeepBrush}" Opacity="0.3" CornerRadius="{StaticResource RadiusLarge}" Margin="-2,-10,2,10"/>
+
+        <!-- 背景装饰 -->
+        <Canvas IsHitTestVisible="False">
+            <Ellipse Canvas.Left="50" Canvas.Top="700" Width="200" Height="200"
+                     Fill="{StaticResource PrimaryBrush}" Opacity="0.03"/>
+            <Ellipse Canvas.Left="650" Canvas.Top="50" Width="150" Height="150"
+                     Fill="#22D3EE" Opacity="0.03"/>
+        </Canvas>
+
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 标题 -->
+            <Grid Grid.Row="0" Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Border Width="40" Height="40" CornerRadius="12"
+                            Background="{StaticResource PrimaryGradientBrush}" Margin="0,0,12,0">
+                        <TextBlock Text="&#xE8BD;" FontFamily="Segoe Fluent Icons"
+                                   FontSize="20" Foreground="{StaticResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="创建房间" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="设置房间参数，邀请好友一同对战" FontSize="13"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+                <Button Grid.Column="1" Content="&#xE8BB;" FontFamily="Segoe Fluent Icons"
+                        Style="{StaticResource WindowControlBtn}"
+                        Click="Close_Click" VerticalAlignment="Top"/>
+            </Grid>
+
+            <!-- 房间信息 -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                <TextBlock Text="房间信息" Style="{StaticResource PageSubHeader}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 房间名称 -->
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="房间名称" Style="{StaticResource SectionLabel}"/>
+                        <TextBox x:Name="txtRoomName" Style="{StaticResource FrostedInput}"
+                                 Padding="12,10"
+                                 FontSize="14" CaretBrush="{StaticResource PrimaryBrush}"
+                                 Text="" MaxLength="30"/>
+                    </StackPanel>
+
+                    <!-- 房间密码 -->
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                        <TextBlock Text="房间密码（可选）" Style="{StaticResource SectionLabel}"/>
+                        <Border Background="{StaticResource GlassGradientBrush}"
+                                CornerRadius="{StaticResource RadiusSmall}"
+                                BorderBrush="#3D5540"
+                                BorderThickness="1">
+                            <PasswordBox x:Name="txtRoomPassword" Background="Transparent" BorderThickness="0"
+                                         Padding="12,10" Foreground="{StaticResource TextPrimaryBrush}"
+                                         FontSize="14" CaretBrush="{StaticResource PrimaryBrush}"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <!-- 模式选择 -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                <TextBlock Text="游戏模式" Style="{StaticResource PageSubHeader}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnModeCompetitive" Content="竞技"
+                            Style="{StaticResource BtnPrimary}" Width="120" Height="48"
+                            Margin="0,0,12,0" Click="Mode_Click" Tag="竞技"/>
+                    <Button x:Name="btnModeCasual" Content="休闲"
+                            Style="{StaticResource BtnGhost}" Width="120" Height="48"
+                            Margin="0,0,12,0" Click="Mode_Click" Tag="休闲"/>
+                    <Button x:Name="btnModeWingman" Content="双人"
+                            Style="{StaticResource BtnGhost}" Width="120" Height="48"
+                            Click="Mode_Click" Tag="双人"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 地图选择 -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                <TextBlock Text="选择地图" Style="{StaticResource PageSubHeader}"/>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_dust2">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Dust II" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="经典" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_mirage">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Mirage" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="热门" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_inferno">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Inferno" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="战术" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_nuke">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Nuke" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="垂直" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_overpass">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Overpass" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="水路" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource MapCard}" MouseLeftButtonDown="Map_Click" Tag="de_anubis">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Anubis" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="新图" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+
+            <!-- 服务器区域 -->
+            <StackPanel Grid.Row="4" Margin="0,0,0,20">
+                <TextBlock Text="服务器区域" Style="{StaticResource PageSubHeader}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="btnRegionCN" Content="中国" Style="{StaticResource BtnPrimary}"
+                            Width="120" Height="48" Margin="0,0,12,0" Click="Region_Click" Tag="CN"/>
+                    <Button x:Name="btnRegionHK" Content="香港" Style="{StaticResource BtnGhost}"
+                            Width="120" Height="48" Margin="0,0,12,0" Click="Region_Click" Tag="HK"/>
+                    <Button x:Name="btnRegionJP" Content="日本" Style="{StaticResource BtnGhost}"
+                            Width="120" Height="48" Click="Region_Click" Tag="JP"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 信息和错误 -->
+            <Grid Grid.Row="5" Margin="-2,59,2,51">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="最大玩家: " FontSize="12"
+                           Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" x:Name="txtMaxPlayers" Text="10" FontSize="14" FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" x:Name="txtError" Foreground="#F43F5E" FontSize="12"
+                           TextWrapping="Wrap" Visibility="Collapsed" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- 底部按钮 -->
+            <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="btnCreateRoom" Content="创建房间"
+                        Style="{StaticResource BtnCyber}"
+                        Width="200" Height="57" FontSize="18"
+                        Click="BtnCreateRoom_Click"/>
+                <Button Content="取消" Style="{StaticResource BtnGhost}"
+                        Width="120" Height="56" FontSize="16" Click="Cancel_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,9 @@
+D:\学习\ddddddddddfxxg\bsp\publish\BeiShuiCS2.pdb
+D:\学习\ddddddddddfxxg\bsp\publish\Resources\AnimationBackground.html
+D:\学习\ddddddddddfxxg\bsp\publish\Resources\Legal\agreement.txt
+D:\学习\ddddddddddfxxg\bsp\publish\Resources\Legal\declaration.txt
+D:\学习\ddddddddddfxxg\bsp\publish\Resources\Legal\privacy.txt
+D:\学习\ddddddddddfxxg\bsp\publish\Microsoft.Web.WebView2.Core.xml
+D:\学习\ddddddddddfxxg\bsp\publish\Microsoft.Web.WebView2.WinForms.xml
+D:\学习\ddddddddddfxxg\bsp\publish\Microsoft.Web.WebView2.Wpf.xml
+D:\学习\ddddddddddfxxg\bsp\publish\BeiShuiCS2.exe
