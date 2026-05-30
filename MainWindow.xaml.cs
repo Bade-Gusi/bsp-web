@@ -23,8 +23,10 @@ namespace BeiShuiCS2
         public ObservableCollection<MatchResult> RecentMatches { get; set; } = new();
 
         private readonly DateTime _startupTime = DateTime.Now;
+        private int _lastFriendCount;
         private PerformanceCounter? _cpuCounter;
         private DispatcherTimer? _systemTimer;
+        private DispatcherTimer? _friendTimer;
         private NotifyIconManager? _trayIcon;
         private HotkeyManager? _hotkeys;
         private WebView2? _animationBg;
@@ -126,6 +128,25 @@ namespace BeiShuiCS2
             _systemTimer.Tick += (s, e) => UpdateSystemStatus();
             _systemTimer.Start();
             UpdateSystemStatus(); // 立即更新一次
+
+            // 好友请求轮询
+            _friendTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
+            _friendTimer.Tick += async (s, e) =>
+            {
+                try
+                {
+                    var result = await ApiClient.GetAsync<System.Text.Json.JsonElement[]>("/api/friends");
+                    if (result.Success && result.Data != null)
+                    {
+                        int count = result.Data.Length;
+                        if (_lastFriendCount > 0 && count > _lastFriendCount)
+                            ShowFriendToast("有新的好友请求");
+                        _lastFriendCount = count;
+                    }
+                }
+                catch { }
+            };
+            _friendTimer.Start();
         }
 
         private void UpdateSystemStatus()
@@ -1105,6 +1126,41 @@ namespace BeiShuiCS2
                 var antiCheat = new AntiCheatStatusWindow { Owner = this };
                 antiCheat.ShowDialog();
             }
+        }
+
+        private void ShowFriendToast(string message)
+        {
+            try
+            {
+                var toast = new System.Windows.Controls.Border
+                {
+                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(200, 34, 217, 126)),
+                    CornerRadius = new System.Windows.CornerRadius(8),
+                    Padding = new System.Windows.Thickness(16, 10, 16, 10),
+                    Margin = new System.Windows.Thickness(16),
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+                    VerticalAlignment = System.Windows.VerticalAlignment.Top,
+                    Opacity = 0,
+                    Child = new System.Windows.Controls.TextBlock
+                    {
+                        Text = message,
+                        Foreground = System.Windows.Media.Brushes.White,
+                        FontSize = 13
+                    }
+                };
+                if (contentArea != null)
+                {
+                    System.Windows.Controls.Panel.SetZIndex(toast, 1000);
+                    contentArea.Children.Add(toast);
+                    toast.BeginAnimation(System.Windows.UIElement.OpacityProperty,
+                        new System.Windows.Media.Animation.DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.3)));
+                    var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+                    timer.Tick += (_, _) => { timer.Stop(); toast.BeginAnimation(System.Windows.UIElement.OpacityProperty,
+                        new System.Windows.Media.Animation.DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3))); };
+                    timer.Start();
+                }
+            }
+            catch { }
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)

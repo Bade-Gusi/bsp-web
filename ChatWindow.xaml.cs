@@ -1,5 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,6 +13,7 @@ namespace BeiShuiCS2
     public partial class ChatWindow : Window
     {
         private Action<object>? _onRoomMessageHandler;
+        private static readonly string CacheFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chat_cache.json");
 
         public ChatWindow()
         {
@@ -26,6 +29,27 @@ namespace BeiShuiCS2
                 _onRoomMessageHandler = (data) => Dispatcher.Invoke(() => OnRoomMessage(data));
                 App.SignalR.OnRoomMessage(_onRoomMessageHandler);
             }
+
+            // 加载历史消息缓存
+            try
+            {
+                if (File.Exists(CacheFile))
+                {
+                    var cached = JsonSerializer.Deserialize<System.Text.Json.JsonElement[]>(File.ReadAllText(CacheFile));
+                    if (cached != null)
+                    {
+                        foreach (var msg in cached)
+                        {
+                            var sender = msg.TryGetProperty("sender", out var s) ? s.GetString() ?? "玩家" : "玩家";
+                            var text = msg.TryGetProperty("text", out var t) ? t.GetString() ?? "" : "";
+                            var isMine = msg.TryGetProperty("isMine", out var m) && m.GetBoolean();
+                            if (!string.IsNullOrEmpty(text))
+                                AddMessage(sender, text, isMine ? HorizontalAlignment.Right : HorizontalAlignment.Left);
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         private void OnRoomMessage(object data)
@@ -100,6 +124,26 @@ namespace BeiShuiCS2
 
             msgPanel.Children.Add(wrapper);
             msgScroll.ScrollToEnd();
+            SaveMessageToCache(sender, text, alignment == HorizontalAlignment.Right);
+        }
+
+        private void SaveMessageToCache(string sender, string text, bool isMine)
+        {
+            try
+            {
+                var entry = new { sender, text, isMine, time = DateTime.Now.ToString("o") };
+                var list = new List<object>();
+                if (File.Exists(CacheFile))
+                {
+                    var json = File.ReadAllText(CacheFile);
+                    var existing = JsonSerializer.Deserialize<List<object>>(json);
+                    if (existing != null) list = existing;
+                }
+                list.Add(entry);
+                if (list.Count > 200) list.RemoveRange(0, list.Count - 200);
+                File.WriteAllText(CacheFile, JsonSerializer.Serialize(list));
+            }
+            catch { }
         }
 
         private async void Send_Click(object sender, RoutedEventArgs e)

@@ -628,3 +628,7 @@ D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\SteamBindWindow.ba
 D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\ConfirmExitWindow.g.cs
 D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\FriendRequestsWindow.g.cs
 D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\SteamBindWindow.g.cs
+D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\BroadcastServerWindow.baml
+D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\ServerBroadcastPopup.baml
+D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\BroadcastServerWindow.g.cs
+D:\学习\ddddddddddfxxg\bsp\obj\Debug\net9.0-windows\win-x64\ServerBroadcastPopup.g.cs

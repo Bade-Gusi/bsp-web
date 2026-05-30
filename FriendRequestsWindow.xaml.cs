@@ -134,7 +134,7 @@ namespace BeiShuiCS2
             }
         }
 
-        private async void RejectRequest_Click(object sender, RoutedEventArgs e)
+        private void RejectRequest_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is int friendId && friendId > 0)
             {

@@ -64,8 +64,6 @@ namespace BeiShuiCS2
 
         // ==================== 状态 ====================
         private static bool _antitamperInitialized;
-        private static int _watchdogTick;
-
         /// <summary>
         /// 初始化反篡改子系统 — 安全模式（无进程注入检测）
         /// </summary>
@@ -243,19 +241,6 @@ namespace BeiShuiCS2
         /// </summary>
         private static CheckResult CheckGuardian()
         {
-            // 如果启用了进程守护，检查其是否存活
-            if (App.GuardianProcess != null)
-            {
-                try
-                {
-                    if (App.GuardianProcess.HasExited)
-                    {
-                        // 守护进程退出不直接封禁，只记录
-                        System.Diagnostics.Debug.WriteLine("[AntiCheat] 守护进程已退出");
-                    }
-                }
-                catch { }
-            }
             return new CheckResult { Ok = true };
         }
 

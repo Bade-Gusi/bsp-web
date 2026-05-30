@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace BeiShuiCS2
@@ -18,10 +19,13 @@ namespace BeiShuiCS2
                 this.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.35)));
                 var bounce = new DoubleAnimation(0.8, 1, TimeSpan.FromSeconds(0.4));
                 bounce.EasingFunction = new BackEase { Amplitude = 0.3, EasingMode = EasingMode.EaseOut };
-                (this.Content as UIElement).RenderTransformOrigin = new Point(0.5, 0.5);
-                (this.Content as UIElement).RenderTransform = new ScaleTransform(0.8, 0.8);
-                (this.Content as UIElement).RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, bounce);
-                (this.Content as UIElement).RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, bounce);
+                if (this.Content is UIElement el)
+                {
+                    el.RenderTransformOrigin = new Point(0.5, 0.5);
+                    el.RenderTransform = new ScaleTransform(0.8, 0.8);
+                    el.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, bounce);
+                    el.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, bounce);
+                }
             };
         }
 

@@ -20,6 +20,9 @@ public class AuthController : ControllerBase
 
     private static readonly Dictionary<string, DateTime> _registerCooldowns = new();
     private static readonly object _cooldownLock = new();
+    private static readonly Dictionary<string, (int Count, DateTime LockTime)> _loginFailures = new();
+    private const int MaxLoginAttempts = 5;
+    private static readonly TimeSpan LoginLockDuration = TimeSpan.FromMinutes(15);
 
     public AuthController(AppDbContext db, IConfiguration config)
     {
@@ -88,9 +91,35 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        // 暴力破解防护：N次失败后锁定
+        lock (_cooldownLock)
+        {
+            if (_loginFailures.TryGetValue(ip, out var fail))
+            {
+                if (fail.Count >= MaxLoginAttempts && DateTime.UtcNow - fail.LockTime < LoginLockDuration)
+                    return StatusCode(429, new { Error = $"登录失败次数过多，请{LoginLockDuration.TotalMinutes}分钟后再试" });
+                if (DateTime.UtcNow - fail.LockTime > LoginLockDuration)
+                    _loginFailures.Remove(ip);
+            }
+        }
+
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == req.Username);
         if (user == null || !VerifyPasswordBcrypt(req.Password, user.PasswordHash))
+        {
+            lock (_cooldownLock)
+            {
+                if (_loginFailures.TryGetValue(ip, out var f))
+                    _loginFailures[ip] = (f.Count + 1, DateTime.UtcNow);
+                else
+                    _loginFailures[ip] = (1, DateTime.UtcNow);
+            }
             return Unauthorized(new { Error = "用户名或密码错误" });
+        }
+
+        // 登录成功后清除失败记录
+        lock (_cooldownLock) { _loginFailures.Remove(ip); }
 
         user.LastLoginAt = DateTime.UtcNow;
         if (!string.IsNullOrEmpty(req.MachineFingerprint))
@@ -262,4 +291,73 @@ public class AuthController : ControllerBase
         try { return BCrypt.Net.BCrypt.Verify(password, hash); }
         catch { return false; }
     }
+
+    // ──────────────── 忘记密码 ────────────────
+
+    static readonly Dictionary<string, (string Code, DateTime Expiry)> _resetCodes = new();
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Username))
+            return BadRequest(new { Error = "请输入用户名" });
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == req.Username);
+        if (user == null)
+            return BadRequest(new { Error = "用户不存在" });
+
+        var code = new Random().Next(100000, 999999).ToString();
+        var key = $"{req.Username}_{req.Email}";
+
+        lock (_resetCodes) { _resetCodes[key] = (code, DateTime.UtcNow.AddMinutes(15)); }
+
+        Console.WriteLine($"[忘记密码] 用户={req.Username}, 验证码={code} (开发模式)");
+        return Ok(new { Message = "验证码已发送", DevCode = code });
+    }
+
+    [HttpPost("verify-code")]
+    public IActionResult VerifyCode([FromBody] VerifyCodeRequest req)
+    {
+        var key = $"{req.Username}_{req.Email ?? ""}";
+        lock (_resetCodes)
+        {
+            if (!_resetCodes.TryGetValue(key, out var entry))
+                return BadRequest(new { Error = "验证码未发送或已过期" });
+            if (DateTime.UtcNow > entry.Expiry)
+            { _resetCodes.Remove(key); return BadRequest(new { Error = "验证码已过期" }); }
+            if (entry.Code != req.Code)
+                return BadRequest(new { Error = "验证码错误" });
+            return Ok(new { Message = "验证成功" });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest req)
+    {
+        var key = $"{req.Username}_{req.Email ?? ""}";
+        lock (_resetCodes)
+        {
+            if (!_resetCodes.TryGetValue(key, out var entry))
+                return BadRequest(new { Error = "验证码未发送或已过期" });
+            if (DateTime.UtcNow > entry.Expiry)
+            { _resetCodes.Remove(key); return BadRequest(new { Error = "验证码已过期" }); }
+            if (entry.Code != req.Code)
+                return BadRequest(new { Error = "验证码错误" });
+            _resetCodes.Remove(key);
+        }
+
+        if (string.IsNullOrWhiteSpace(req.NewPassword) || req.NewPassword.Length < 6)
+            return BadRequest(new { Error = "密码至少6位" });
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == req.Username);
+        if (user == null) return BadRequest(new { Error = "用户不存在" });
+
+        user.PasswordHash = HashPasswordBcrypt(req.NewPassword);
+        await _db.SaveChangesAsync();
+        return Ok(new { Message = "密码重置成功" });
+    }
+
+    public record ForgotPasswordRequest(string Username, string? Email);
+    public record VerifyCodeRequest(string Username, string? Email, string Code);
+    public record ResetPasswordRequest(string Username, string? Email, string Code, string NewPassword);
 }
