@@ -39,18 +39,28 @@ export default function DashboardPage() {
           if (Array.isArray(m)) setMatches(m.slice(0, 5))
         }
       } catch {}
-      // 加载广播记录
+      setLoaded(true)
+    }
+    load()
+
+    // 每15秒轮询广播
+    const iv = setInterval(async () => {
       try {
         const res = await fetch('/api/admin/latest-broadcast')
         if (res.ok) {
           const d = await res.json()
-          if (d?.serverAddress) setBroadcasts([{ addr: d.serverAddress, time: d.broadcastedAt || '' }])
+          if (d?.serverAddress) {
+            setBroadcasts(prev => {
+              const exists = prev.some(b => b.addr === d.serverAddress)
+              if (exists) return prev
+              return [{ addr: d.serverAddress, time: d.broadcastedAt || '' }, ...prev].slice(0, 10)
+            })
+          }
         }
       } catch {}
-      try { const c = localStorage.getItem('broadcast_history'); if (c) setBroadcasts(prev => [...JSON.parse(c), ...prev].slice(0, 10)) } catch {}
-      setLoaded(true)
-    }
-    load()
+      try { const c = localStorage.getItem('broadcast_history'); if (c) setBroadcasts(prev => { const p = JSON.parse(c); return p.length > prev.length ? p : prev }) } catch {}
+    }, 15000)
+    return () => clearInterval(iv)
   }, [token, user])
 
   if (!loaded) return null
