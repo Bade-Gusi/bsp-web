@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '/dashboard': '首页', '/match': '快速匹配', '/duel': '1v1对战', '/rooms': '房间大厅',
       '/servers': '服务器', '/friends': '好友', '/chat': '聊天', '/leaderboard': '排行榜',
       '/achievements': '成就', '/market': '皮肤市场', '/welfare': '背水公益',
-      '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播', '/changelog': '更新日志',
+      '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播', '/broadcast-history': '广播记录', '/changelog': '更新日志',
       '/server-manager': '管理中心', '/voice': '语音', '/reaction-game': '反应测试',
     }
     setPageTitle(t[pathname] || '背水对战平台')
