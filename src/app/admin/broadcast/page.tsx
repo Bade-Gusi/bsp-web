@@ -35,7 +35,7 @@ export default function BroadcastPage() {
       const res = await fetch('/api/admin/broadcast', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ serverAddress: serverAddress.trim() }),
+        body: JSON.stringify({ serverAddress: serverAddress.trim(), password }),
       })
       if (!res.ok) { const e = await res.json(); throw new Error(e.error || '广播失败') }
       setStatus('广播成功，所有在线用户已收到')
