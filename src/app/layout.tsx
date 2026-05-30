@@ -51,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '/dashboard': '首页', '/match': '快速匹配', '/duel': '1v1对战', '/rooms': '房间大厅',
       '/servers': '服务器', '/friends': '好友', '/chat': '聊天', '/leaderboard': '排行榜',
       '/achievements': '成就', '/market': '皮肤市场', '/welfare': '背水公益',
-      '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播',
+      '/settings': '设置', '/minigames': '小游戏', '/admin/broadcast': '广播', '/changelog': '更新日志',
       '/server-manager': '管理中心', '/voice': '语音', '/reaction-game': '反应测试',
     }
     setPageTitle(t[pathname] || '背水对战平台')
@@ -92,7 +92,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   )
                 })}
               </div>
-              <div className="px-4 py-4 border-t border-border/50">
+              <div className="px-4 py-3 border-t border-border/50 space-y-1">
+                <Link href="/changelog" className="block text-xs text-surface-500 hover:text-primary transition-colors">v2.0.0 Aurora</Link>
                 <button onClick={() => useAuthStore.getState().logout()} className="text-xs text-surface-400 hover:text-white transition-colors">退出登录</button>
               </div>
             </nav>

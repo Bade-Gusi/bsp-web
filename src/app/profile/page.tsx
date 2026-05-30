@@ -2,59 +2,48 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
 import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
 
 export default function ProfilePage() {
-  const searchParams = useSearchParams()
-  const userId = searchParams.get('id')
   const { user, token } = useAuthStore()
-  const [profile, setProfile] = useState<any>(null)
+  const [stats, setStats] = useState<any>(null)
   const [matches, setMatches] = useState<any[]>([])
 
   useEffect(() => {
-    async function load() {
-      try {
-        const uid = userId ? Number(userId) : user?.id
-        if (uid && token) {
-          const p = await api.getUser(uid)
-          setProfile(p)
-          const s = await api.getUserStats(uid)
-          if (s.recentMatches) setMatches(s.recentMatches.slice(0, 5))
-        }
-      } catch {}
-      if (!profile) {
-        setProfile({ nickname: user?.nickname || '玩家', mmr: user?.mmr || 1500, winCount: user?.winCount || 0, loseCount: user?.loseCount || 0 })
-      }
-    }
-    load()
-  }, [userId, user, token])
+    if (!user || !token) return
+    api.getUserStats(user.id).then(s => setStats(s)).catch(() => {})
+    api.getMatches(1).then(m => { if (Array.isArray(m)) setMatches(m.slice(0, 5)) }).catch(() => {})
+  }, [user, token])
 
-  if (!profile) return null
+  if (!user) return null
+
+  const winRate = stats ? Math.round((stats.winCount / (stats.winCount + stats.loseCount || 1)) * 100) : '--'
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="flex items-center gap-6 mb-6">
-        <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center text-3xl font-bold text-primary">{profile.nickname?.[0] || '?'}</div>
+      <div className="flex items-center gap-6 mb-8">
+        <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center text-3xl font-bold text-primary">{user.nickname?.[0] || user.username[0]}</div>
         <div>
-          <h2 className="text-2xl font-bold text-white">{profile.nickname || '玩家'}</h2>
-          <p className="text-sm text-primary font-bold mt-1">{profile.mmr || 1500} MMR</p>
-          <p className="text-xs text-surface-400">胜: {profile.winCount || 0} 负: {profile.loseCount || 0}</p>
+          <h2 className="text-2xl font-bold text-white">{user.nickname || user.username}</h2>
+          <div className="flex items-center gap-2 mt-1">
+            <Badge variant="primary">{stats?.mmr || user.mmr || 1000} MMR</Badge>
+            <span className="text-xs text-surface-400">UID: {user.id}</span>
+          </div>
+          {stats && <p className="text-xs text-surface-400 mt-1">胜 {stats.winCount} 负 {stats.loseCount} · 胜率 {winRate}%</p>}
         </div>
-        <Button variant="secondary">添加好友</Button>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: '胜场', value: profile.winCount || 0 },
-          { label: '负场', value: profile.loseCount || 0 },
-          { label: '总场次', value: (profile.winCount || 0) + (profile.loseCount || 0) },
-          { label: 'MMR', value: profile.mmr || 1500 },
+          { label: '胜场', value: stats?.winCount ?? '--' },
+          { label: '负场', value: stats?.loseCount ?? '--' },
+          { label: 'Rating', value: stats?.mmr ?? user.mmr ?? '--' },
+          { label: '爆头', value: stats?.headshotCount ?? '--' },
         ].map((s, i) => (
-          <Card key={i} variant="default" className="text-center">
+          <Card key={i} variant="default" className="text-center py-4">
             <p className="text-2xl font-bold text-primary">{s.value}</p>
             <p className="text-xs text-surface-400 mt-1">{s.label}</p>
           </Card>
@@ -63,16 +52,20 @@ export default function ProfilePage() {
 
       <Card variant="default">
         <h3 className="text-base font-bold text-white mb-4">最近比赛</h3>
-        {matches.length === 0 ? (
-          <p className="text-sm text-surface-400">暂无比赛记录</p>
-        ) : matches.map((m, i) => (
-          <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-hover transition-colors">
-            <span className={'w-2 h-2 rounded-full ' + (m.isWinner ? 'bg-primary' : 'bg-red-500')} />
-            <span className="flex-1 text-sm text-white">{m.mapName || 'de_dust2'}</span>
-            <span className={'text-sm font-bold ' + (m.isWinner ? 'text-primary' : 'text-red-400')}>{m.score || '--'}</span>
-          </div>
-        ))}
+        {matches.length === 0 ? <p className="text-sm text-surface-400">暂无比赛记录</p>
+          : matches.map((m, i) => (
+            <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-hover transition-colors">
+              <span className={'w-2 h-2 rounded-full ' + (m.isWin ? 'bg-primary' : 'bg-red-500')} />
+              <span className="flex-1 text-sm text-white">{m.mapName || m.map || 'de_dust2'}</span>
+              <span className={'text-sm font-bold ' + (m.isWin ? 'text-primary' : 'text-red-400')}>{m.isWin ? '胜利' : '失败'}</span>
+            </div>
+          ))}
       </Card>
+
+      <div className="mt-6 p-4 bg-card rounded-md border border-border">
+        <p className="text-xs text-surface-400">背水对战平台 v2.0.0 Aurora</p>
+        <p className="text-xs text-surface-500 mt-1">Build {new Date().toISOString().slice(0, 10)}</p>
+      </div>
     </motion.div>
   )
 }
