@@ -1,27 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BeiShuiCS2
 {
     public enum ViolationType
     {
-        None,
-        Debugger,
-        BlacklistedProcess,
-        BlacklistedWindow,
-        Injection,
-        Macro,
-        PacketSniffer,
-        Tamper,
-        Integrity,
-        AntiCheatSelf
+        None, Debugger, BlacklistedProcess, BlacklistedWindow,
+        Injection, Macro, PacketSniffer, Tamper, Integrity, AntiCheatSelf
     }
 
     public class CheckResult
@@ -33,48 +22,37 @@ namespace BeiShuiCS2
 
     public static class AntiCheat
     {
-        public const string Version = "BAC3.3.0 (VAC-Safe)";
+        public const string Version = "BAC3.4.0 (Zero-Client)";
 
         // ════════════════════════════════════════════════════════════
-        // VAC 安全设计原则：
-        // 1. 不调用 OpenProcess 打开 CS2 进程（否则 VAC 会标记）
-        // 2. 不注入 CS2 进程，不读写 CS2 内存
-        // 3. 仅通过进程名/窗口标题等安全方式做检测
-        // 4. 反作弊验证全权交给服务端 BAC 插件（UDP 心跳）
-        // 5. 客户端只做辅助检查，不做强制封禁
+        // VAC 安全设计（v3.4）：
+        // 1. 不调用任何 user32.dll → 无 EnumWindows
+        // 2. 不 OpenProcess → 不碰游戏内存/句柄
+        // 3. 仅使用 .NET 托管 API + kernel32 标准调试检测
+        // 4. 全部判定逻辑移到服务端 BAC 插件
+        // 5. 客户端只负责数据采集和心跳上报
         // ════════════════════════════════════════════════════════════
 
-        // ==================== P/Invoke（仅安全范围） ====================
+        // ==================== P/Invoke（仅 kernel32，VAC 安全） ===
         [DllImport("kernel32.dll")]
         private static extern bool IsDebuggerPresent();
 
-        [DllImport("kernel32.dll")]
-        private static extern bool CheckRemoteDebuggerPresent(IntPtr hProcess, ref bool isDebuggerPresent);
-
-        [DllImport("user32.dll")]
-        private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        [DllImport("user32.dll")]
-        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        // ==================== 黑名单进程名 ====================
+        private static readonly HashSet<string> BlacklistedProcesses = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "cheatengine", "extremeinjector", "cs2injector",
+            "processhacker", "autohotkey", "macrorecorder", "tinytask"
+        };
 
         // ==================== 状态 ====================
         private static bool _antitamperInitialized;
-        /// <summary>
-        /// 初始化反篡改子系统 — 安全模式（无进程注入检测）
-        /// </summary>
+
         public static void InitAntitamper()
         {
             if (_antitamperInitialized) return;
             _antitamperInitialized = true;
-
             try
             {
-                // 验证关键方法存在
                 var methods = typeof(AntiCheat).GetMethods(BindingFlags.Static | BindingFlags.Public);
                 if (!methods.Any(m => m.Name == nameof(PerformFullCheckWithReason)))
                     throw new InvalidOperationException("反作弊代码完整性校验失败");
@@ -82,35 +60,12 @@ namespace BeiShuiCS2
             catch { }
         }
 
-        // ==================== 黑名单 ====================
-        private static readonly HashSet<string> BlacklistedProcesses = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "cheatengine", "cheatengine-x86_64", "extremeinjector", "cs2injector",
-            "injector", "mapper", "manualmap", "loadlibrary",
-            "processhacker", "processhacker2",
-            "autohotkey", "macrorecorder", "tinytask", "jbit", "macro", "lkmacro"
-        };
-
-        private static readonly string[] BlacklistedWindowClasses =
-        {
-            "CheatEngine", "ExtremeInjector", "Injector", "AutoHotkey", "MacroRecorder"
-        };
-
-        private static readonly string[] BlacklistedWindowTitles =
-        {
-            "Cheat Engine", "CS2 Cheat", "Aimware", "Injector", "Manual Map",
-            "AutoHotkey", "Macro Recorder", "TinyTask"
-        };
-
-        // ==================== 安全检测方法 ====================
-
         /// <summary>
-        /// 检测黑名单进程（仅通过进程名，不 OpenProcess）
+        /// 进程名检测（托管 API，不 OpenProcess）
         /// </summary>
         private static CheckResult CheckBlacklistedProcesses()
         {
-            var allProcs = Process.GetProcesses();
-            foreach (var proc in allProcs)
+            foreach (var proc in Process.GetProcesses())
             {
                 try
                 {
@@ -127,44 +82,39 @@ namespace BeiShuiCS2
         }
 
         /// <summary>
-        /// 检测黑名单窗口（通过 EnumWindows 枚举窗口标题/类名）
+        /// 窗口标题检测（托管 API Process.MainWindowTitle，不调用 user32）
         /// </summary>
         private static CheckResult CheckBlacklistedWindows()
         {
-            bool found = false;
-            string foundReason = "";
+            string[] blacklistedTitles =
+            {
+                "Cheat Engine", "CS2 Cheat", "Aimware", "Injector",
+                "AutoHotkey", "Macro Recorder", "TinyTask"
+            };
 
-            EnumWindows((hWnd, lParam) =>
+            foreach (var proc in Process.GetProcesses())
             {
                 try
                 {
-                    StringBuilder title = new(256);
-                    GetWindowText(hWnd, title, title.Capacity);
-                    string titleStr = title.ToString();
-
-                    StringBuilder className = new(256);
-                    GetClassName(hWnd, className, className.Capacity);
-                    string classStr = className.ToString();
-
-                    foreach (var bt in BlacklistedWindowTitles)
-                        if (titleStr.Contains(bt, StringComparison.OrdinalIgnoreCase))
-                        { found = true; foundReason = $"检测到可疑窗口: {titleStr}"; return false; }
-
-                    foreach (var bc in BlacklistedWindowClasses)
-                        if (classStr.Contains(bc, StringComparison.OrdinalIgnoreCase))
-                        { found = true; foundReason = $"检测到可疑窗口: {titleStr}"; return false; }
+                    string title = proc.MainWindowTitle;
+                    if (string.IsNullOrEmpty(title)) continue;
+                    foreach (var bt in blacklistedTitles)
+                    {
+                        if (title.Contains(bt, StringComparison.OrdinalIgnoreCase))
+                        {
+                            string reason = $"检测到可疑窗口: {title}";
+                            System.Diagnostics.Debug.WriteLine($"[AntiCheat] {reason}");
+                            return new CheckResult { Ok = false, Reason = reason, Type = ViolationType.BlacklistedWindow };
+                        }
+                    }
                 }
                 catch { }
-                return true;
-            }, IntPtr.Zero);
-
-            if (found)
-                return new CheckResult { Ok = false, Reason = foundReason, Type = ViolationType.BlacklistedWindow };
+            }
             return new CheckResult { Ok = true };
         }
 
         /// <summary>
-        /// 调试器检测（仅系统 API，安全）
+        /// 调试器检测（kernel32 标准 API，VAC 安全）
         /// </summary>
         private static CheckResult CheckAntiDebug()
         {
@@ -172,28 +122,15 @@ namespace BeiShuiCS2
             {
                 if (IsDebuggerPresent())
                     return new CheckResult { Ok = false, Reason = "检测到调试器", Type = ViolationType.Debugger };
-
                 if (Debugger.IsAttached)
                     return new CheckResult { Ok = false, Reason = "检测到托管调试器", Type = ViolationType.Debugger };
-
-                // 远程调试检测
-                bool isRemoteDebuggerPresent = false;
-                try
-                {
-                    IntPtr hProcess = Process.GetCurrentProcess().Handle;
-                    CheckRemoteDebuggerPresent(hProcess, ref isRemoteDebuggerPresent);
-                    if (isRemoteDebuggerPresent)
-                        return new CheckResult { Ok = false, Reason = "检测到远程调试器", Type = ViolationType.Debugger };
-                }
-                catch { }
             }
             catch { }
-
             return new CheckResult { Ok = true };
         }
 
         /// <summary>
-        /// 程序集完整性检查（反射，不进��进程操作）
+        /// 程序集完整性检查（反射，不进进程操作）
         /// </summary>
         private static CheckResult CheckAssemblyIntegrity()
         {
@@ -208,80 +145,29 @@ namespace BeiShuiCS2
             {
                 return new CheckResult { Ok = false, Reason = "无法反射反作弊类型", Type = ViolationType.Integrity };
             }
-
-            // 检查内存中是否有被篡改的关键类型
-            try
-            {
-                // 验证反作弊相关类型没被重写
-                var antiCheatType = typeof(AntiCheat);
-                var assembly = antiCheatType.Assembly;
-                var allTypes = assembly.GetTypes();
-
-                // 检查是否有未知的"作弊"相关类型注入到本程序集
-                int suspiciousCount = 0;
-                foreach (var t in allTypes)
-                {
-                    string name = t.Name.ToLower();
-                    if (name.Contains("cheat") || name.Contains("hack") || name.Contains("bypass") ||
-                        name.Contains("patch") && t.Namespace != null && !t.Namespace.StartsWith("BeiShui"))
-                    {
-                        suspiciousCount++;
-                    }
-                }
-                if (suspiciousCount > 5) // 允许少量正常类型
-                    return new CheckResult { Ok = false, Reason = "检测到异常类型注入", Type = ViolationType.Injection };
-            }
-            catch { }
-
             return new CheckResult { Ok = true };
         }
 
         /// <summary>
-        /// 进程守护检查 — 只检查 Guardian 进程是否存活
-        /// </summary>
-        private static CheckResult CheckGuardian()
-        {
-            return new CheckResult { Ok = true };
-        }
-
-        // ==================== 综合检查 ====================
-
-        /// <summary>
-        /// 执行完整反作弊检查（VAC 安全版本）
-        /// 所有检测方法均不涉及 OpenProcess 外部进程
+        /// 综合检查 — 所有检测均不涉及 OpenProcess/user32
         /// </summary>
         public static CheckResult PerformFullCheckWithReason()
         {
-            // 1. 程序集完整性（反射，安全）
             var integrity = CheckAssemblyIntegrity();
             if (!integrity.Ok) return integrity;
 
-            // 2. 调试器检测（系统 API，安全）
             var antiDebug = CheckAntiDebug();
             if (!antiDebug.Ok) return antiDebug;
 
-            // 3. 黑名单进程检测（Process.GetProcesses，安全）
-            var blacklistedProc = CheckBlacklistedProcesses();
-            if (!blacklistedProc.Ok) return blacklistedProc;
+            var procCheck = CheckBlacklistedProcesses();
+            if (!procCheck.Ok) return procCheck;
 
-            // 4. 黑名单窗口检测（EnumWindows，安全）
-            var blacklistedWin = CheckBlacklistedWindows();
-            if (!blacklistedWin.Ok) return blacklistedWin;
-
-            // 5. 进程守护检查（仅检查自身进程状态）
-            var guardian = CheckGuardian();
-            if (!guardian.Ok) return guardian;
+            var winCheck = CheckBlacklistedWindows();
+            if (!winCheck.Ok) return winCheck;
 
             return new CheckResult { Ok = true };
         }
 
-        /// <summary>
-        /// 快速检查（用于 UI 状态指示）
-        /// </summary>
-        public static bool PerformQuickCheck()
-        {
-            var result = PerformFullCheckWithReason();
-            return result.Ok;
-        }
+        public static bool PerformQuickCheck() => PerformFullCheckWithReason().Ok;
     }
 }
